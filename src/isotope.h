@@ -12,29 +12,29 @@ public:
   Isotope() = delete; // ?
 
   Isotope(const std::string& name, Condition c) : name_{name}, condition_{c} {
-    std::cout << "Created " << name;
+    // std::cout << "Created " << name;
 
-    switch (c)
-    {
-    case I_MOL:
-      std::cout << "  Molecular iodine\n";
-      break;
-    case I_ORG:
-      std::cout << "  Organic iodine\n";
-      break;
-    case I_AER:
-      std::cout << "  Aerosol iodine\n";
-      break;
-    case IRG:
-      std::cout << "  IRG\n";
-      break;
-    case AER:
-      std::cout << "  Aerosol\n";
-      break;
-    default:
-      std::cout << "  UNKNOWN\n";
-      break;
-    }
+    // switch (c)
+    // {
+    // case I_MOL:
+    //   std::cout << "  Molecular iodine\n";
+    //   break;
+    // case I_ORG:
+    //   std::cout << "  Organic iodine\n";
+    //   break;
+    // case I_AER:
+    //   std::cout << "  Aerosol iodine\n";
+    //   break;
+    // case IRG:
+    //   std::cout << "  IRG\n";
+    //   break;
+    // case AER:
+    //   std::cout << "  Aerosol\n";
+    //   break;
+    // default:
+    //   std::cout << "  UNKNOWN\n";
+    //   break;
+    // }
 
   }
 

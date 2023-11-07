@@ -25,6 +25,8 @@ class Release {
     return os;
   }
 
+  Isotope GetIsotoper() const { return isotope_; }
+
   private:
     Isotope isotope_;
     std::vector<double> activity_;
