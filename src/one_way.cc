@@ -1,7 +1,7 @@
-#include "dataset.h"
+#include "one_way.h"
 #include "filereader.h"
 
-void Dataset::LoadData(const std::string& filename) {
+void OneWayRelease::LoadData(const std::string& filename) {
   FileReader reader(filename);
   times_ = reader.GetTimeArray();
   releases_ = reader.GetData();

@@ -5,13 +5,15 @@
 
 #include <iomanip>
 
-class Dataset {
+class OneWayRelease {
   public:
-    Dataset() {}
+    enum Way {AnnulusAirAct, AnnulusSurfAct, AnnulusVentRel, BypassRel, ContAirAct, ContSurfAct, ContVentRel, SourceAct, SprinklerAct};
+
+    OneWayRelease() {}
 
     void LoadData(const std::string& filename); // loads releases and times from concrete file
 
-    friend std::ostream& operator<<(std::ostream& os, const Dataset& data) {
+    friend std::ostream& operator<<(std::ostream& os, const OneWayRelease& data) {
       os << "DATASET:\n";
       os << std::setw(12);
       for (double moment : data.times_) {
@@ -52,6 +54,7 @@ class Dataset {
   private:
     std::vector<Release> releases_;
     std::vector<double> times_;
+    Way way;
 };
 
 #endif // DATASET_H_
