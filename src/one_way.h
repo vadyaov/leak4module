@@ -1,20 +1,19 @@
-#ifndef DATASET_H_
-#define DATASET_H_
+#ifndef ONE_WAY_H_
+#define ONE_WAY_H_
 
 #include "release.h"
 
-#include <iomanip>
-
 class OneWayRelease {
   public:
-    enum Way {AnnulusAirAct, AnnulusSurfAct, AnnulusVentRel, BypassRel, ContAirAct, ContSurfAct, ContVentRel, SourceAct, SprinklerAct};
+    enum Way {AnnulusAirAct, AnnulusSurfAct, AnnulusVentRel, BypassRel,
+              ContAirAct, ContSurfAct, ContVentRel, SourceAct, SprinklerAct};
 
-    OneWayRelease() {}
+    OneWayRelease(Way w) : way{w} {}
 
     void LoadData(const std::string& filename); // loads releases and times from concrete file
 
     friend std::ostream& operator<<(std::ostream& os, const OneWayRelease& data) {
-      os << "DATASET:\n";
+      os << "WAY = " << data.way << std::endl;
       os << std::setw(12);
       for (double moment : data.times_) {
         os << moment;
@@ -57,4 +56,4 @@ class OneWayRelease {
     Way way;
 };
 
-#endif // DATASET_H_
+#endif // ONE_WAY_H_

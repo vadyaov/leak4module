@@ -11,8 +11,9 @@
 class FileReader {
   public:
     FileReader(const std::string& filename) : istrm_{filename} {
-      if (!istrm_.is_open())
+      if (!istrm_.is_open()) {
         throw std::invalid_argument("Cant't open file");
+      }
 
     }
 
@@ -40,11 +41,14 @@ class FileReader {
     }
 
     std::vector<Release> GetData() {
+      // works only if begins on line "Molecular iodine"
       std::string line;
       std::vector<Release> releases;
 
+      std::cout <<"HERE\n";
       Isotope::Condition cond = Isotope::Condition::I_MOL;
       while (std::getline(istrm_, line)) {
+        std::cout << line << std::endl;
         if (!line.empty()) {
           if (line.find("IRG") != line.npos) {
             cond = Isotope::Condition::IRG;

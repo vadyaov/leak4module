@@ -1,10 +1,8 @@
-#include "one_way.h"
-
-#include <iostream>
+#include "all_ways_release.h"
 
 int main() {
-  Dataset data;
-  data.LoadData("BypassReleaseOut.txt");
-  std::cout << data << std::endl;
+  AllWaysRelease current_var;
+  current_var.LoadAllData();
+  std::cout << current_var << std::endl;
   return 0;
 }

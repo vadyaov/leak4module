@@ -1,5 +1,5 @@
 #ifndef ISOTOPE_H_
-#define ISOTOPE_H
+#define ISOTOPE_H_
 
 #include <string>
 #include <iostream>
@@ -51,4 +51,4 @@ public:
     Condition condition_;
 };
 
-#endif // ISOTOPE_H
+#endif // ISOTOPE_H_
