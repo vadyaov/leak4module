@@ -3,6 +3,8 @@
 
 #include "all_ways_release.h"
 
+#include <algorithm>
+
 class AllVariants {
 
     public:
@@ -20,7 +22,20 @@ class AllVariants {
             }
         }
 
-        int FindMaxVariant(OneWayRelease::Way, Isotope::Condition condition);
+        int FindMaxVariant(OneWayRelease::Way w, Isotope::Condition condition) {
+            std::vector<double> sum;
+            for (const auto& variant : variants_) {
+                OneWayRelease needed_way_release = variant.GetRelease(w);
+                std::cout << needed_way_release << std::endl;
+                sum.push_back(needed_way_release.LatestSumInCondition(condition));
+            }
+
+            for (double i : sum)
+                std::cout << i << ' ';
+            std::cout << std::endl;
+
+            return std::max_element(sum.begin(), sum.end()) - sum.begin();
+        }
 
         friend std::ostream& operator<<(std::ostream& os, AllVariants& vars) {
             int i = 1;

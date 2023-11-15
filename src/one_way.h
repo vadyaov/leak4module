@@ -8,9 +8,22 @@ class OneWayRelease {
     enum Way {AnnulusAirAct, AnnulusSurfAct, AnnulusVentRel, BypassRel,
               ContAirAct, ContSurfAct, ContVentRel, SourceAct, SprinklerAct};
 
+    OneWayRelease() {}
     OneWayRelease(Way w) : way{w} {}
 
     void LoadData(const std::string& filename); // loads releases and times from concrete file
+
+    Way GetWay() const noexcept { return way; }
+
+    double LatestSumInCondition(Isotope::Condition condition) const {
+      double sum {0};
+      for (const auto& release : releases_) {
+        if (release.GetIsotoper().GetCondition() == condition) {
+          sum += release.Back();
+        }
+      }
+      return sum;
+    }
 
     friend std::ostream& operator<<(std::ostream& os, const OneWayRelease& data) {
       os << "WAY = " << data.way << std::endl;

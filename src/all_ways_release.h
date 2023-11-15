@@ -10,8 +10,15 @@ class AllWaysRelease {
   public:
     AllWaysRelease() {}
 
-    // opening in var dir --> open results --> read all files with LoadData
     void LoadAllData(const fs::path&);
+
+    OneWayRelease GetRelease(OneWayRelease::Way w) const {
+      OneWayRelease release;
+      for (const auto& one_way : all_ways_)
+        if (one_way.GetWay() == w) release = one_way;
+
+      return release;
+    }
 
     friend std::ostream& operator<<(std::ostream& os, AllWaysRelease& all_ways) {
       for (const auto& one_way : all_ways.all_ways_)

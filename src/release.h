@@ -13,6 +13,9 @@ class Release {
   Release(Isotope is, const std::vector<double>& act) : isotope_{is}, activity_{act} {
   }
 
+  // for the  last time point
+  double Back() const { return activity_.back(); }
+
   friend std::ostream& operator<<(std::ostream& os, const Release& rel) {
     os << rel.isotope_.GetName();
 
