@@ -1,21 +1,9 @@
 #include "all_ways_release.h"
 
-#include <filesystem>
+void AllWaysRelease::LoadAllData(const fs::path& var_path) { // inside one var
 
-namespace fs = std::filesystem;
-
-void AllWaysRelease::LoadAllData() { // opening in current dir --> open results --> read all files with LoadData
-// 1. open "results"
-// 2. out all filenames first
-    // std::cout << "Current dir name is: " << fs::current_path() << '\n';
-
-    fs::path current = fs::current_path().root_path();
-    current /= "Work";
-    current /= "Leak4";
-    current /= "true";
-    // fs::path current = fs::current_path();
-
-    fs::path results_dir = current /= "results";
+    fs::path results_dir = var_path;
+    results_dir /= "results";
 
     int i = 0;
     for (const auto& entry : fs::directory_iterator(results_dir)) {

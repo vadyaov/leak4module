@@ -45,10 +45,8 @@ class FileReader {
       std::string line;
       std::vector<Release> releases;
 
-      std::cout <<"HERE\n";
       Isotope::Condition cond = Isotope::Condition::I_MOL;
       while (std::getline(istrm_, line)) {
-        std::cout << line << std::endl;
         if (!line.empty()) {
           if (line.find("IRG") != line.npos) {
             cond = Isotope::Condition::IRG;

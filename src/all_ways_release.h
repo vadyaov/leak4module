@@ -2,16 +2,16 @@
 #define ALL_WAYS_RELEASE_H_
 
 #include "one_way.h"
+#include <filesystem>
 
-/*открывается в директории одного варианта переходит в папку "results", собирает результаты по всем путям*/
+namespace fs = std::filesystem;
 
 class AllWaysRelease {
   public:
-    AllWaysRelease() {
-      std::cout << "constructor all_ways_release\n";
-    }
+    AllWaysRelease() {}
 
-    void LoadAllData(); // opening in current dir --> open results --> read all files with LoadData
+    // opening in var dir --> open results --> read all files with LoadData
+    void LoadAllData(const fs::path&);
 
     friend std::ostream& operator<<(std::ostream& os, AllWaysRelease& all_ways) {
       for (const auto& one_way : all_ways.all_ways_)

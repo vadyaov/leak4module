@@ -1,8 +1,8 @@
-#include "all_ways_release.h"
+#include "dir_runner.h"
 
 int main() {
-  AllWaysRelease current_var;
-  current_var.LoadAllData();
-  std::cout << current_var << std::endl;
+  AllVariants variants;
+  variants.LoadVariants();
+  std::cout << variants << std::endl;
   return 0;
 }
