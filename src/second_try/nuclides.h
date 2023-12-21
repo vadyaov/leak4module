@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NUCLIDES_H_
+#define NUCLIDES_H_
 
 #include <vector>
 #include <map>
@@ -41,6 +42,7 @@ class Nuclides {
           std::cout << act << " ";
         std::cout << std::endl;
       }
+      std::cout << std::endl;
     }
 
     dvector& GetNuclideActivity(const Nuclide& nuclide) {
@@ -68,6 +70,8 @@ class Nuclides {
     }
 
   private:
-    std::multimap<Nuclide, dvector, std::less<>> coolant_data_;
+    std::multimap<Nuclide, dvector> coolant_data_;
 
 };
+
+#endif // NUCLIDES_H_

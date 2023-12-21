@@ -1,24 +1,22 @@
-#pragma once
+#ifndef NUCLIDE_H_
+#define NUCLIDE_H_
 
 #include <string>
 
 class Nuclide {
   public:
     enum Tp {IOD_MOL, IOD_ORG, IOD_AER, IRG, AER};
-    Nuclide(const std::string& name, int t) : name_{name}, t_{Tp(t)} {}
 
-    std::string Name() const noexcept { return name_; }
-    Tp Type() const noexcept {return t_; } 
+    Nuclide(const std::string& name, int t);
 
-    // bool operator==(const Nuclide& lhs) {
-    //   return lhs.name_ == name_ && lhs.t_ == t_;
-    // }
+    std::string Name() const noexcept;
+    Tp Type() const noexcept;
 
   private:
     std::string name_;
     Tp t_;
 };
 
-bool operator<(const Nuclide& lhs, const Nuclide& rhs) {
-  return lhs.Name() < rhs.Name();
-}
+bool operator<(const Nuclide& lhs, const Nuclide& rhs);
+
+#endif // NUCLIDE_H_
