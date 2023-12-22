@@ -1,16 +1,10 @@
-#include "release.h"
-
-// #include "dir_handler.h"
+#include "variants.h"
 
 int main() {
 
-  Release data1("variants/1/", Release::Bypass | Release::CVent);
-  Release data2("variants/2/", Release::Bypass | Release::CVent);
+  Variants accident("variants/", Release::CVent | Release::Bypass);
 
-  data1.Print();
-  data2.Print();
-
-  // DirectoryHandler h("variants");
+  accident.print();
 
   return 0;
 }
