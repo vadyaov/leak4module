@@ -39,10 +39,28 @@ class Nuclides {
       for (const auto& [key, value] : coolant_data_) {
         std::cout << key.Type() << " [" << key.Name() << "] = "; 
         for (double act : value)
-          std::cout << act << " ";
+          std::cout << std::scientific << act << " ";
         std::cout << std::endl;
       }
       std::cout << std::endl;
+    }
+
+    double TotalRelease() const noexcept {
+      double sum {0};
+      for (const auto&  [key, value] : coolant_data_) {
+        sum += value.back();
+      }
+      return sum;
+    }
+
+    double TotalOneFormRelease(Nuclide::Tp form) const noexcept {
+      double sum {0};
+      for (const auto& [key, value] : coolant_data_) {
+        if (key.Type() == form) {
+          sum += value.back();
+        }
+      }
+      return sum;
     }
 
     dvector& GetNuclideActivity(const Nuclide& nuclide) {

@@ -82,9 +82,33 @@ void Release::GetReleaseActivity(const std::string& path_to_dir, int way) {
   
 }
 
-void Release::Print() const noexcept {
+void Release::Print(Way w) const noexcept {
   for (const auto& one_way_release : release_) {
-    std::cout << "WAY #" << one_way_release.second << std::endl;
-    one_way_release.first.Print();
+    if (one_way_release.second == w) {
+      std::cout << "WAY #" << one_way_release.second << std::endl;
+      one_way_release.first.Print();
+    }
   }
+}
+
+double Release::TotalOneFormRelease(Way w, Nuclide::Tp form) const noexcept {
+  std::cout << "SIZE OF RELEASE == " << release_.size() << "\n";
+  double total_rel_for_one_form {0};
+  for (const auto& rel : release_) {
+    if (rel.second == w) {
+      std::cout << "HERE\n";
+      total_rel_for_one_form += rel.first.TotalOneFormRelease(form);
+    }
+  }
+  return total_rel_for_one_form;
+}
+
+double Release::TotalRelease(Way w) const noexcept {
+  double total_rel_for_all_nuc {0};
+  for (const auto& rel : release_) {
+    if (rel.second == w) {
+      total_rel_for_all_nuc += rel.first.TotalRelease();
+    }
+  }
+  return total_rel_for_all_nuc;
 }

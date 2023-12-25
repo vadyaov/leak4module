@@ -20,7 +20,10 @@ class Release {
 
     Release(const std::string& path, int w);
 
-    void Print() const noexcept;
+    void Print(Way w) const noexcept;
+
+    double TotalRelease(Way w) const noexcept;
+    double TotalOneFormRelease(Way w, Nuclide::Tp form) const noexcept;
 
   private:
     Nuclides nuc;
