@@ -5,7 +5,7 @@
 
 class Nuclide {
   public:
-    enum Tp {IOD_MOL, IOD_ORG, IOD_AER, IRG, AER};
+    enum Tp {IOD_MOL = 0, IOD_ORG, IOD_AER, IRG, AER};
 
     Nuclide(const std::string& name, int t);
 

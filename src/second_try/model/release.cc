@@ -31,22 +31,20 @@ static std::vector<double> GetTimeArray(const std::string& path) {
 }
 
 Release::Release(const std::string& path, int w) : nuc{path} {
-  std::cout << path << " " << "way = " << w << "\n";
   time_ = GetTimeArray(path + "/Initial_Systems_Data.txt");
   for (int i = 0; i < 9; ++i) // 9 ways
     if (w & (1 << i)) {
       release_.resize(release_.size() + 1, std::make_pair(nuc, Release::Way(1 << i))); // dont like such logic here, mb do it one time before
-      // release_.back().second = Release::Way(1 << i);
-
       GetReleaseActivity(path, static_cast<int>(std::log2(1 << i)));
     }
-
-  // release_.Print();
 }
 
-
+// можно сделать этот метод статик, чтобы он просто был в области видимости класса, но принимал указатель на сам класс, так как методу по сути
+// не нужны приватные поля.
+// Его работа - заполнять векторы активности из класса Nuclides
+// в общем, надо тут логику улучшить немного
 void Release::GetReleaseActivity(const std::string& path_to_dir, int way) {
-  const std::vector<std::string> file_names {"AnnulusAirActOut", "AnnulusSurfActOut", "AnnulusVentReleaseOut", "BypassReleaseOut", "ContAirActOut", "ContSurfActOut", "ContVentReleaseOut", "SourceActOut", "SprinklerActOut"};
+  static const std::vector<std::string> file_names {"AnnulusAirActOut", "AnnulusSurfActOut", "AnnulusVentReleaseOut", "BypassReleaseOut", "ContAirActOut", "ContSurfActOut", "ContVentReleaseOut", "SourceActOut", "SprinklerActOut"};
   std::string current_way{path_to_dir + "results/" + file_names[way] + ".txt"};
 
   std::cout << "Current file: " << current_way << "\n";
@@ -92,11 +90,9 @@ void Release::Print(Way w) const noexcept {
 }
 
 double Release::TotalOneFormRelease(Way w, Nuclide::Tp form) const noexcept {
-  std::cout << "SIZE OF RELEASE == " << release_.size() << "\n";
   double total_rel_for_one_form {0};
   for (const auto& rel : release_) {
     if (rel.second == w) {
-      std::cout << "HERE\n";
       total_rel_for_one_form += rel.first.TotalOneFormRelease(form);
     }
   }

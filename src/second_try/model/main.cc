@@ -2,7 +2,7 @@
 
 int main() {
 
-  Variants accident("variants/", Release::CVent | Release::Bypass);
+  Variants accident("../variants/", Release::CVent | Release::Bypass);
 
   // accident.print(Release::Bypass);
 
