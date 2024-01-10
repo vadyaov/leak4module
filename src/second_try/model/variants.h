@@ -7,7 +7,9 @@
 
 class Variants {
   public:
-    Variants(const std::string& path, int w) {
+    Variants() {}
+
+    void LoadData(const std::string& path, int w) {
       for (const auto& dir_entry : std::filesystem::directory_iterator{path}) {
         if (dir_entry.is_directory()) {
           // std::cout << "Getting release from " << dir_entry.path().string() << "\n";
@@ -51,4 +53,5 @@ class Variants {
   private:
     std::vector<Release> releases_; // releases[i] - release throw needed way for variant No. i + 1
     std::vector<std::string> dir_names_;
+
 };
