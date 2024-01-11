@@ -33,13 +33,20 @@ class Release {
 
     Release(const std::string& path, int w);
 
-    void Print(Way w) const noexcept;
+    void Print(int w) const noexcept;
 
     // суммарный выброс по всем нуклидам для пути Way
     double TotalRelease(Way w) const noexcept;
 
     // суммарный выброс по нуклидов в форме form для пути Way
     double TotalOneFormRelease(Way w, Nuclide::Tp form) const noexcept;
+
+    int TotalNuclidesNumber() const noexcept { return nuc.Size(); }
+    const std::vector<double>& GetTimeVector() const noexcept { return time_; }
+
+    int IodineNumber() const noexcept { return nuc.IodineNumber(); }
+    int IrgNumber() const noexcept { return nuc.IrgNumber(); }
+    int AerNumber() const noexcept { return nuc.AerNumber(); }
 
   private:
      // плохо сделано. логика в том чтобы один раз инициализировать nuclides для всех путей

@@ -35,8 +35,15 @@ class Nuclides {
 
     dvector& GetNuclideActivity(const Nuclide& nuclide);
 
+    int Size() const noexcept { return coolant_data_.size(); }
+
+    int IodineNumber() const noexcept { return iodine_count; }
+    int IrgNumber() const noexcept { return irg_count; }
+    int AerNumber() const noexcept { return aer_count; }
+
   private:
     std::multimap<Nuclide, dvector> coolant_data_;
+    int iodine_count, irg_count, aer_count;
 };
 
 #endif // NUCLIDES_H_

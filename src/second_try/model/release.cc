@@ -80,9 +80,9 @@ void Release::GetReleaseActivity(const std::string& path_to_dir, int way) {
   
 }
 
-void Release::Print(Way w) const noexcept {
+void Release::Print(int w) const noexcept {
   for (const auto& one_way_release : release_) {
-    if (one_way_release.second == w) {
+    if ((int)one_way_release.second & w) {
       std::cout << "WAY #" << one_way_release.second << std::endl;
       one_way_release.first.Print();
     }

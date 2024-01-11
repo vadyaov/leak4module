@@ -13,16 +13,15 @@ ARCHIVE := $(CURR_DIR)/$(EXEC)
 
 # CLANG := clang-format -n
 
-all: install run
+all: install #run
 
 install:
 	@$(MK) $(BUILD_DIR)
 	@cmake -G"MinGW Makefiles" $(CURR_DIR) -B $(BUILD_DIR)
-	@cd $(BUILD_DIR) ; $(MAKE) ; cd ..
 
-run:
-	@cd $(BUILD_DIR)
-	./leak
+# run:
+# 	@cd $(BUILD_DIR)
+# 	./leak
 
 clean:
 	$(RM) -r $(BUILD_DIR)

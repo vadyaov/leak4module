@@ -25,6 +25,10 @@ qt_add_executable(leak
   # view/DataTable.h view/DataTable.cc
   view/button.h view/button.cc
 
+  model/variants.h
+  model/release.h model/release.cc
+  model/nuclides.h model/nuclides.cc
+  model/nuclide.h model/nuclide.cc
 )
 
 target_link_libraries(leak PUBLIC Qt::Widgets)

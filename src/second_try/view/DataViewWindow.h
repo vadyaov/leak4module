@@ -22,12 +22,14 @@ class DataViewWindow : public QWidget {
     // QSize sizeHint() const override;
     private slots:
       void DirectoryClicked();
+      void ShowClicked();
 
     private:
       Variants variants;
       QTableWidget* tableWidget;
       QLabel* dir_name;
       QComboBox* var_box;
+      QComboBox* way_box;
 
     private:
       Button* CreateButton(const QString& text, const char* member);

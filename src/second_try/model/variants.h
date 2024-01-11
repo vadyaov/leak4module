@@ -10,11 +10,16 @@ class Variants {
     Variants() {}
 
     void LoadData(const std::string& path, int w) {
+      releases_.clear();
+      dir_names_.clear();
+
+      std::string dir_path;
       for (const auto& dir_entry : std::filesystem::directory_iterator{path}) {
         if (dir_entry.is_directory()) {
           // std::cout << "Getting release from " << dir_entry.path().string() << "\n";
-          releases_.push_back({dir_entry.path().string() + '/', w});
-          dir_names_.push_back(dir_entry.path().string());
+          dir_path = dir_entry.path().string();
+          releases_.push_back({dir_path + '/', w});
+          dir_names_.push_back(dir_path.substr(dir_path.find_last_of('\\') + 1));
         }
       }
     }
@@ -45,9 +50,45 @@ class Variants {
       return releases_[index];
     }
 
-    void print(Release::Way w) const {
-      for (const Release& rel : releases_)
-        rel.Print(w);
+    const std::vector<std::string>& GetNames() const noexcept {
+      return dir_names_;
+    }
+
+    void print(int w) const {
+      for (std::size_t i = 0; i != releases_.size(); ++i) {
+        std::cout << "DIR: " << dir_names_[i] << "\n";
+        releases_[i].Print(w);
+      }
+    }
+
+    int TotalNuclidesNumber() const { 
+      if (releases_.empty()) throw std::runtime_error("No releases loaded");
+      
+      return releases_.back().TotalNuclidesNumber();
+    }
+
+    const std::vector<double>& GetTimeArray() const { 
+      if (releases_.empty()) throw std::runtime_error("No releases loaded");
+
+      return releases_.back().GetTimeVector();
+    }
+
+    int IodNum() const {
+      if (releases_.empty()) throw std::runtime_error("No releases loaded");
+
+      return releases_.back().IodineNumber();
+    }
+
+    int IrgNum() const {
+      if (releases_.empty()) throw std::runtime_error("No releases loaded");
+
+      return releases_.back().IrgNumber();
+    }
+
+    int AerNum() const {
+      if (releases_.empty()) throw std::runtime_error("No releases loaded");
+
+      return releases_.back().AerNumber();
     }
 
   private:
