@@ -91,6 +91,10 @@ class Variants {
       return releases_.back().AerNumber();
     }
 
+    std::vector<std::pair<std::string, Nuclides::dvector>> GetNuclideData(int variant_num, Release::Way way, Nuclide::Tp type) {
+      return releases_[variant_num].GetNucData(way, type);
+    }
+
   private:
     std::vector<Release> releases_; // releases[i] - release throw needed way for variant No. i + 1
     std::vector<std::string> dir_names_;

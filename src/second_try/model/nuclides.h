@@ -35,6 +35,16 @@ class Nuclides {
 
     dvector& GetNuclideActivity(const Nuclide& nuclide);
 
+    std::vector<std::pair<std::string, dvector>> GetNuclideArray(Nuclide::Tp tp) const {
+      std::vector<std::pair<std::string, dvector>> result;
+      for (const auto& nucl : coolant_data_) {
+        if (nucl.first.Type() == tp) {
+          result.push_back(std::make_pair(nucl.first.Name(), nucl.second));
+        }
+      }
+      return result;
+    }
+
     int Size() const noexcept { return coolant_data_.size(); }
 
     int IodineNumber() const noexcept { return iodine_count; }

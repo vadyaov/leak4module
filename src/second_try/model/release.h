@@ -48,6 +48,17 @@ class Release {
     int IrgNumber() const noexcept { return nuc.IrgNumber(); }
     int AerNumber() const noexcept { return nuc.AerNumber(); }
 
+    std::vector<std::pair<std::string, Nuclides::dvector>> GetNucData(Way way, Nuclide::Tp type) {
+      std::vector<std::pair<std::string, Nuclides::dvector>> res;
+      for (const auto& rel : release_) {
+        if (rel.second == way) {
+          return rel.first.GetNuclideArray(type);
+        }
+      }
+      throw std::runtime_error("Runtime error. No nuclide found");
+    }
+
+
   private:
      // плохо сделано. логика в том чтобы один раз инициализировать nuclides для всех путей
      // но наверняка можно сделать как то по другому, может, на более высоком уровне (variants)
