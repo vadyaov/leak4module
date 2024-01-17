@@ -23,7 +23,7 @@ class Nuclides {
   public:
     typedef std::vector<double> dvector;
 
-    Nuclides(const std::string& source_file);
+    Nuclides(const std::string& source_file, int time_points_num);
 
     void Print() const noexcept;
 

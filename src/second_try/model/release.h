@@ -4,6 +4,7 @@
 #include "nuclides.h"
 
 #include <sstream>
+#include <filesystem>
 
 /*
   Класс Release.
@@ -31,7 +32,7 @@ class Release {
               SprinkAct = 1 << 8
             };
 
-    Release(const std::string& path, int w);
+    Release(const std::string& path);
 
     void Print(int w) const noexcept;
 
@@ -41,12 +42,12 @@ class Release {
     // суммарный выброс по нуклидов в форме form для пути Way
     double TotalOneFormRelease(Way w, Nuclide::Tp form) const noexcept;
 
-    int TotalNuclidesNumber() const noexcept { return nuc.Size(); }
+    int TotalNuclidesNumber() const noexcept { return release_.back().first.Size(); }
     const std::vector<double>& GetTimeVector() const noexcept { return time_; }
 
-    int IodineNumber() const noexcept { return nuc.IodineNumber(); }
-    int IrgNumber() const noexcept { return nuc.IrgNumber(); }
-    int AerNumber() const noexcept { return nuc.AerNumber(); }
+    int IodineNumber() const noexcept { return release_.back().first.IodineNumber(); }
+    int IrgNumber() const noexcept { return release_.back().first.IrgNumber(); }
+    int AerNumber() const noexcept { return release_.back().first.AerNumber(); }
 
     std::vector<std::pair<std::string, Nuclides::dvector>> GetNucData(Way way, Nuclide::Tp type) {
       std::vector<std::pair<std::string, Nuclides::dvector>> res;
@@ -64,13 +65,13 @@ class Release {
      // но наверняка можно сделать как то по другому, может, на более высоком уровне (variants)
      // хотя можно оставить и так, не сильно критично. Я не могу быть точно уверен что во всех вариантах
      // будут одни и те же изотопы (хотя скорее всего это так)
-    Nuclides nuc;
+    // Nuclides nuc;
 
     std::vector<std::pair<Nuclides, Way>> release_;
     std::vector<double> time_;     // output time points
 
   private:
-    void GetReleaseActivity(const std::string& path_to_dir, int way); // way from 0 to 9 here (as log2 of Way)
+    Nuclides LoadNuclidesData(const std::string& path_to_dir, int way); // way from 0 to 9 here (as log2 of Way)
 };
 
 #endif // RELEASE_H_

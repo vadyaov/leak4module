@@ -13,6 +13,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Sql)
 
 add_compile_options(-Wall -Werror -Wextra -Wpedantic)
 
@@ -32,3 +33,4 @@ qt_add_executable(leak
 )
 
 target_link_libraries(leak PUBLIC Qt::Widgets)
+target_link_libraries(leak PRIVATE Qt6::Sql)

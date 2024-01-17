@@ -2,7 +2,7 @@
 #define DATAVIEWWINDOW_H_
 
 #include <QWidget>
-#include <QTableWidgetItem>
+#include <QSqlTableModel>
 
 #include "button.h"
 
@@ -11,8 +11,9 @@
 QT_BEGIN_NAMESPACE
 class QLabel;
 class QComboBox;
-class QTableWidget;
+// class QTableWidget;
 // class QTableWidgetItem;
+class QTableView;
 QT_END_NAMESPACE
 
 class DataViewWindow : public QWidget {
@@ -21,8 +22,7 @@ class DataViewWindow : public QWidget {
   public:
     DataViewWindow();
     // ~DataViewWindow() {
-    //   for (auto ptr : molecular_iod_items)
-    //     delete ptr;
+    //   delete model;
     // }
 
     // QSize sizeHint() const override;
@@ -32,15 +32,17 @@ class DataViewWindow : public QWidget {
 
     private:
       Variants variants;
-      QTableWidget* tableWidget;
+      // QTableWidget* tableWidget;
+      QTableView *tableView;
       QLabel* dir_name;
       QComboBox* var_box;
       QComboBox* way_box;
+      QSqlTableModel model;
 
     private:
       Button* CreateButton(const QString& text, const char* member);
 
-      std::vector<QTableWidgetItem*> molecular_iod_items;
+      // std::vector<QTableWidgetItem*> molecular_iod_items;
 
 };
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <filesystem>
 #include "release.h"
 
 #include <iostream>
@@ -9,7 +8,7 @@ class Variants {
   public:
     Variants() {}
 
-    void LoadData(const std::string& path, int w) {
+    void LoadData(const std::string& path) {
       releases_.clear();
       dir_names_.clear();
 
@@ -18,7 +17,7 @@ class Variants {
         if (dir_entry.is_directory()) {
           // std::cout << "Getting release from " << dir_entry.path().string() << "\n";
           dir_path = dir_entry.path().string();
-          releases_.push_back({dir_path + '/', w});
+          releases_.push_back(dir_path + '/');
           dir_names_.push_back(dir_path.substr(dir_path.find_last_of('\\') + 1));
         }
       }

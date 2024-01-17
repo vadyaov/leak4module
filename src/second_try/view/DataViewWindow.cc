@@ -3,8 +3,10 @@
 #include <QFileDialog>
 #include <QGridLayout>
 #include <QLabel>
-#include <QTableWidget>
 #include <QComboBox>
+// #include <QTableWidget>
+// #include <QTableWidgetItem>
+#include <QTableView>
 
 #include <iostream>
 
@@ -27,7 +29,8 @@ DataViewWindow::DataViewWindow() {
 
   var_box = new QComboBox;
 
-  tableWidget = new QTableWidget(this);
+  // tableWidget = new QTableWidget(this);
+  tableView = new QTableView;
 
   QGridLayout *main_layout = new QGridLayout;
   QGridLayout *stuff_layout = new QGridLayout;
@@ -38,11 +41,17 @@ DataViewWindow::DataViewWindow() {
   stuff_layout->addWidget(var_box, 1, 1, 1, 1);
   stuff_layout->addWidget(show_button, 3, 0, 2, 2);
 
-  main_layout->addWidget(tableWidget, 0, 1, 10, 10);
+  // main_layout->addWidget(tableWidget, 0, 1, 10, 10);
+  main_layout->addWidget(tableView, 0, 1, 10, 10);
 
   main_layout->addLayout(stuff_layout, 0, 0, 1, 1);
 
   setLayout(main_layout);
+}
+
+void InitModel(QSqlTableModel* m) {
+  m->setTable("Release");
+  m->setEditStrategy(QSqlTableModel::OnManualSubmit); // All changes will be cached in the model until either submitAll() or revertAll() is called.
 }
 
 void DataViewWindow::DirectoryClicked() {
@@ -51,9 +60,7 @@ void DataViewWindow::DirectoryClicked() {
   if (!dir_path.isEmpty()) {
     auto pos = dir_path.lastIndexOf('/') + 1;
     dir_name->setText(dir_path.mid(pos, dir_path.size() - pos));
-    int way = way_box->itemData(way_box->currentIndex()).toInt();
-    variants.LoadData(dir_path.toStdString(), way);
-    // variants.print(way);
+    variants.LoadData(dir_path.toStdString());
 
     var_box->clear();
     for (const std::string& s : variants.GetNames())
@@ -61,7 +68,9 @@ void DataViewWindow::DirectoryClicked() {
   }
 }
 
+// creation results table
 void DataViewWindow::ShowClicked() {
+  /*
   int headnames_num = 6;
   int rows = variants.TotalNuclidesNumber() + headnames_num + 1; // adding 1 for time line
   int columns = variants.GetTimeArray().size();
@@ -183,7 +192,7 @@ void DataViewWindow::ShowClicked() {
     }
     start_for_span++;
   }
-
+*/
 }
 
 Button *DataViewWindow::CreateButton(const QString &text, const char *member) {
