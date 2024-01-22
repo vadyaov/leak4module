@@ -18,7 +18,7 @@ class Variants {
           // std::cout << "Getting release from " << dir_entry.path().string() << "\n";
           dir_path = dir_entry.path().string();
           releases_.push_back(dir_path + '/');
-          dir_names_.push_back(dir_path.substr(dir_path.find_last_of('\\') + 1));
+          dir_names_.push_back(dir_path.substr(dir_path.find_last_not_of("0123456789") + 1));
         }
       }
     }
@@ -93,6 +93,8 @@ class Variants {
     std::vector<std::pair<std::string, Nuclides::dvector>> GetNuclideData(int variant_num, Release::Way way, Nuclide::Tp type) {
       return releases_[variant_num].GetNucData(way, type);
     }
+
+    bool Empty() const noexcept { return releases_.empty(); }
 
   private:
     std::vector<Release> releases_; // releases[i] - release throw needed way for variant No. i + 1

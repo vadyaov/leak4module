@@ -26,7 +26,7 @@ class DataViewWindow : public QWidget {
     // QSize sizeHint() const override;
     private slots:
       void DirectoryClicked();
-      void ShowClicked();
+      void UpdateTable();
 
     private:
       Variants variants;
