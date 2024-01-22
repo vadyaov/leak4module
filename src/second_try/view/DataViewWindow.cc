@@ -4,9 +4,8 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QComboBox>
-// #include <QTableWidget>
-// #include <QTableWidgetItem>
-#include <QTableView>
+#include <QTableWidget>
+#include <QTableWidgetItem>
 
 #include <iostream>
 
@@ -29,8 +28,7 @@ DataViewWindow::DataViewWindow() {
 
   var_box = new QComboBox;
 
-  // tableWidget = new QTableWidget(this);
-  tableView = new QTableView;
+  tableWidget = new QTableWidget(this);
 
   QGridLayout *main_layout = new QGridLayout;
   QGridLayout *stuff_layout = new QGridLayout;
@@ -41,21 +39,15 @@ DataViewWindow::DataViewWindow() {
   stuff_layout->addWidget(var_box, 1, 1, 1, 1);
   stuff_layout->addWidget(show_button, 3, 0, 2, 2);
 
-  // main_layout->addWidget(tableWidget, 0, 1, 10, 10);
-  main_layout->addWidget(tableView, 0, 1, 10, 10);
+  main_layout->addWidget(tableWidget, 0, 1, 10, 10);
 
   main_layout->addLayout(stuff_layout, 0, 0, 1, 1);
 
   setLayout(main_layout);
 }
 
-void InitModel(QSqlTableModel* m) {
-  m->setTable("Release");
-  m->setEditStrategy(QSqlTableModel::OnManualSubmit); // All changes will be cached in the model until either submitAll() or revertAll() is called.
-}
-
 void DataViewWindow::DirectoryClicked() {
-  QString dir_path = QFileDialog::getExistingDirectory(this, tr("Open Directory"), "", QFileDialog::ShowDirsOnly
+  QString dir_path = QFileDialog::getExistingDirectory(this, tr("Open Directory"), "../", QFileDialog::ShowDirsOnly
                                                                                                  | QFileDialog::DontResolveSymlinks);
   if (!dir_path.isEmpty()) {
     auto pos = dir_path.lastIndexOf('/') + 1;
@@ -68,131 +60,64 @@ void DataViewWindow::DirectoryClicked() {
   }
 }
 
-// creation results table
-void DataViewWindow::ShowClicked() {
-  /*
-  int headnames_num = 6;
-  int rows = variants.TotalNuclidesNumber() + headnames_num + 1; // adding 1 for time line
-  int columns = variants.GetTimeArray().size();
+void DataViewWindow::FillTableWithOneForm(size_t it, Release::Way way_idx, int var_idx, int& line_idx) {
 
-  tableWidget->setRowCount(rows);
-  tableWidget->setColumnCount(columns);
+  static const std::vector<Nuclide::Tp> forms {Nuclide::IOD_MOL, Nuclide::IOD_ORG,
+                                               Nuclide::IRG, Nuclide::AER, Nuclide::IOD_AER};
 
-  int start_for_span = 0;
-  int current_var = var_box->currentIndex();
-  Release::Way current_way = Release::Way(1 << way_box->currentIndex());
+  static const std::vector<std::string> headers {"Molecular Iodine", "Organic Iodine",
+                                          "IRG", "Aerosols", "Aerosol Iodine"};
 
-  tableWidget->setSpan(start_for_span++, 0, 1, columns); // Time
+    tableWidget->setSpan(line_idx, 0, 1, tableWidget->columnCount());
+    QTableWidgetItem *headerItem = new QTableWidgetItem(tr(headers[it].data()));
+    headerItem->setTextAlignment(Qt::AlignCenter);
+    tableWidget->setVerticalHeaderItem(line_idx, new QTableWidgetItem);
+    tableWidget->setItem(line_idx++, 0, headerItem);
+
+    auto nuclide_data = variants.GetNuclideData(var_idx, way_idx, forms[it]);
+    for (const auto & nucl : nuclide_data) {
+      QTableWidgetItem *newItem = new QTableWidgetItem(QString(nucl.first.data()));
+      newItem->setTextAlignment(Qt::AlignCenter);
+      tableWidget->setVerticalHeaderItem(line_idx, newItem);
+      for (std::size_t col = 0; col < nucl.second.size(); ++col) {
+        QTableWidgetItem *actItem = new QTableWidgetItem(QString::number(nucl.second[col], 'e', 3));
+        actItem->setTextAlignment(Qt::AlignCenter);
+        tableWidget->setItem(line_idx, col, actItem);
+      }
+      ++line_idx;
+    }
+}
+
+void DataViewWindow::FillTimeLine(int& line_idx) {
+  tableWidget->setVerticalHeaderItem(line_idx, new QTableWidgetItem);
+  tableWidget->setSpan(line_idx++, 0, 1, tableWidget->columnCount()); // Time
   QTableWidgetItem *vheaderItem = new QTableWidgetItem(tr("TIME, s"));
   vheaderItem->setTextAlignment(Qt::AlignCenter);
-  tableWidget->setVerticalHeaderItem(start_for_span, vheaderItem);
+  tableWidget->setVerticalHeaderItem(line_idx, vheaderItem);
 
   int t_col = 0;
   for (int t : variants.GetTimeArray()) {
     QTableWidgetItem *newItem = new QTableWidgetItem(QString::number(t));
     newItem->setTextAlignment(Qt::AlignCenter);
-    tableWidget->setItem(start_for_span, t_col++, newItem);
+    tableWidget->setItem(line_idx, t_col++, newItem);
   }
-  start_for_span++;
+  line_idx++;
+}
 
-  tableWidget->setSpan(start_for_span, 0, 1, columns); // molecular iodine
+// creation results table
+void DataViewWindow::ShowClicked() {
+  tableWidget->setRowCount(variants.TotalNuclidesNumber() + 7); // adding 1 for time line and 6 for headers
+  tableWidget->setColumnCount(variants.GetTimeArray().size());
 
-  QTableWidgetItem *molHheaderItem = new QTableWidgetItem(tr("Molecular Iodine"));
-  molHheaderItem->setTextAlignment(Qt::AlignCenter);
-  tableWidget->setItem(start_for_span++, 0, molHheaderItem);
+  int current_var = var_box->currentIndex();
+  Release::Way current_way = Release::Way(1 << way_box->currentIndex());
 
-  auto molecular_iod = variants.GetNuclideData(current_var, current_way, Nuclide::IOD_MOL);
-  for (const auto & iod : molecular_iod) {
-    QTableWidgetItem *newItem = new QTableWidgetItem(QString(iod.first.data()));
-    newItem->setTextAlignment(Qt::AlignCenter);
-    // molecular_iod_items.push_back(newItem);
-    tableWidget->setVerticalHeaderItem(start_for_span, newItem);
-    for (std::size_t col = 0; col < iod.second.size(); ++col) {
-      QTableWidgetItem *actItem = new QTableWidgetItem(QString::number(iod.second[col]));
-      actItem->setTextAlignment(Qt::AlignCenter);
-      tableWidget->setItem(start_for_span, col, actItem);
-    }
-    start_for_span++;
+  int line_idx = 0;
+
+  FillTimeLine(line_idx);
+  for (size_t it = 0; it != 5; ++it) { // because we have 5 forms of nuclides
+    FillTableWithOneForm(it, current_way, current_var, line_idx);
   }
-
-  tableWidget->setSpan(start_for_span, 0, 1, columns); // organic iodine
-
-  QTableWidgetItem *orgHheaderItem = new QTableWidgetItem(tr("Organic Iodine"));
-  orgHheaderItem->setTextAlignment(Qt::AlignCenter);
-  tableWidget->setItem(start_for_span++, 0, orgHheaderItem);
-
-  auto organic_iod = variants.GetNuclideData(current_var, current_way, Nuclide::IOD_ORG);
-  for (const auto & iod : organic_iod) {
-    QTableWidgetItem *newItem = new QTableWidgetItem(QString(iod.first.data()));
-    newItem->setTextAlignment(Qt::AlignCenter);
-    // molecular_iod_items.push_back(newItem);
-    tableWidget->setVerticalHeaderItem(start_for_span, newItem);
-    for (std::size_t col = 0; col < iod.second.size(); ++col) {
-      QTableWidgetItem *actItem = new QTableWidgetItem(QString::number(iod.second[col]));
-      actItem->setTextAlignment(Qt::AlignCenter);
-      tableWidget->setItem(start_for_span, col, actItem);
-    }
-    start_for_span++;
-  }
-
-  tableWidget->setSpan(start_for_span, 0, 1, columns); // irg
-
-  QTableWidgetItem *irgHheaderItem = new QTableWidgetItem(tr("IRG"));
-  irgHheaderItem->setTextAlignment(Qt::AlignCenter);
-  tableWidget->setItem(start_for_span++, 0, irgHheaderItem);
-
-  auto irg = variants.GetNuclideData(current_var, current_way, Nuclide::IRG);
-  for (const auto & ir : irg) {
-    QTableWidgetItem *newItem = new QTableWidgetItem(QString(ir.first.data()));
-    newItem->setTextAlignment(Qt::AlignCenter);
-    // molecular_iod_items.push_back(newItem);
-    tableWidget->setVerticalHeaderItem(start_for_span, newItem);
-    for (std::size_t col = 0; col < ir.second.size(); ++col) {
-      QTableWidgetItem *actItem = new QTableWidgetItem(QString::number(ir.second[col]));
-      actItem->setTextAlignment(Qt::AlignCenter);
-      tableWidget->setItem(start_for_span, col, actItem);
-    }
-    start_for_span++;
-  }
-
-  tableWidget->setSpan(start_for_span, 0, 1, columns); // aer
-
-  QTableWidgetItem *aerHheaderItem = new QTableWidgetItem(tr("Aerosols"));
-  aerHheaderItem->setTextAlignment(Qt::AlignCenter);
-  tableWidget->setItem(start_for_span++, 0, aerHheaderItem);
-
-  auto aer = variants.GetNuclideData(current_var, current_way, Nuclide::AER);
-  for (const auto & a : aer) {
-    QTableWidgetItem *newItem = new QTableWidgetItem(QString(a.first.data()));
-    newItem->setTextAlignment(Qt::AlignCenter);
-    // molecular_iod_items.push_back(newItem);
-    tableWidget->setVerticalHeaderItem(start_for_span, newItem);
-    for (std::size_t col = 0; col < a.second.size(); ++col) {
-      QTableWidgetItem *actItem = new QTableWidgetItem(QString::number(a.second[col]));
-      actItem->setTextAlignment(Qt::AlignCenter);
-      tableWidget->setItem(start_for_span, col, actItem);
-    }
-    start_for_span++;
-  }
-
-  tableWidget->setSpan(start_for_span, 0, 1, columns); // aer iodine
-
-  QTableWidgetItem *aerIHheaderItem = new QTableWidgetItem(tr("Aerosol Iodine"));
-  aerIHheaderItem->setTextAlignment(Qt::AlignCenter);
-  tableWidget->setItem(start_for_span++, 0, aerIHheaderItem);
-
-  auto i_aer = variants.GetNuclideData(current_var, current_way, Nuclide::IOD_AER);
-  for (const auto & ia : i_aer) {
-    QTableWidgetItem *newItem = new QTableWidgetItem(QString(ia.first.data()));
-    // molecular_iod_items.push_back(newItem);
-    tableWidget->setVerticalHeaderItem(start_for_span, newItem);
-    for (std::size_t col = 0; col < ia.second.size(); ++col) {
-      QTableWidgetItem *actItem = new QTableWidgetItem(QString::number(ia.second[col]));
-      tableWidget->setItem(start_for_span, col, actItem);
-    }
-    start_for_span++;
-  }
-*/
 }
 
 Button *DataViewWindow::CreateButton(const QString &text, const char *member) {

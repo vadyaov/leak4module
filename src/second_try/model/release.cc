@@ -61,13 +61,13 @@ Nuclides Release::LoadNuclidesData(const std::string& path_to_dir, int way) {
 
 
   for (std::size_t f = 0; f != forms.size(); ++f) {
-    while (!line.empty()) {
+    while (line.size() > 1) { // because exists lines with "\r" only :)
       std::stringstream ss(line);
       std::string name;
       ss >> name;
 
       // take activity vector for nuclide with 'name' of form forms[f]
-      Nuclides::dvector& act_vec = data.GetNuclideActivity({name, forms[f]});
+      Nuclides::dvector& act_vec = data.GetNuclideActivity(name, forms[f]);
       for (std::size_t i = 0; i != time_.size(); ++i) {
         ss >> act_vec[i];
       }
@@ -77,7 +77,7 @@ Nuclides Release::LoadNuclidesData(const std::string& path_to_dir, int way) {
     for (int i = 0; i < 4; ++i)
       std::getline(ifstrm, line);
   }
-  
+
   return data;
 }
 

@@ -33,7 +33,7 @@ class Nuclides {
     // суммарный выброс по одной группе р/н в последней точке
     double TotalOneFormRelease(Nuclide::Tp form) const noexcept;
 
-    dvector& GetNuclideActivity(const Nuclide& nuclide);
+    dvector& GetNuclideActivity(const std::string& name, Nuclide::Tp type);
 
     std::vector<std::pair<std::string, dvector>> GetNuclideArray(Nuclide::Tp tp) const {
       std::vector<std::pair<std::string, dvector>> result;

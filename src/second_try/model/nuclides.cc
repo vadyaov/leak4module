@@ -3,7 +3,12 @@
 namespace {
 
 int GetType(const std::string& line) {
-  return (line[line.size() - 1] - '0');
+  size_t lastDigitIndex = line.find_last_of("0123456789");
+  if (lastDigitIndex != std::string::npos) {
+    return std::stoi(line.substr(lastDigitIndex));
+  }
+
+  throw std::runtime_error("GetType function error.");
 }
 
 std::string GetName(const std::string& s) {
@@ -41,7 +46,6 @@ Nuclides::Nuclides(const std::string& source_file, int time_points_num) : iodine
         aer_count++;
     }
   }
-
 }
 
 double Nuclides::TotalRelease() const noexcept {
@@ -62,12 +66,12 @@ double Nuclides::TotalOneFormRelease(Nuclide::Tp form) const noexcept {
   return sum;
 }
 
-Nuclides::dvector& Nuclides::GetNuclideActivity(const Nuclide& nuclide) {
+Nuclides::dvector& Nuclides::GetNuclideActivity(const std::string& name, Nuclide::Tp type) {
   for (auto& it : coolant_data_) {
-    if (it.first.Name() == nuclide.Name() && it.first.Type() == nuclide.Type())
+    if (it.first.Name() == name && it.first.Type() == type)
       return it.second;
   }
-  throw std::runtime_error("No NUCLIDE found");
+  throw std::runtime_error("No NUCLIDE" + name + " found");
 }
 
 void Nuclides::Print() const noexcept {

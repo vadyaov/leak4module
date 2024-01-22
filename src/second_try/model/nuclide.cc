@@ -1,7 +1,10 @@
 #include "nuclide.h"
 
+#include <iostream>
 
-Nuclide::Nuclide(const std::string& name, int t) : name_{name}, t_{Tp(t)} {}
+Nuclide::Nuclide(const std::string& name, int t) : name_{name}, t_{Tp(t)} {
+  std::cout << "Creating Nuclide with name " << name << " and type " << t << "\n";
+}
 
 std::string Nuclide::Name() const noexcept { return name_; }
 Nuclide::Tp Nuclide::Type() const noexcept {return t_; } 
