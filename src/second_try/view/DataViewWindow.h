@@ -11,8 +11,9 @@ QT_BEGIN_NAMESPACE
 class QLabel;
 class QComboBox;
 class QTableWidget;
-/* class QTableWidgetItem; */
 QT_END_NAMESPACE
+
+class GroupBox;
 
 class DataViewWindow : public QWidget {
   Q_OBJECT
@@ -27,18 +28,24 @@ class DataViewWindow : public QWidget {
     private slots:
       void DirectoryClicked();
       void UpdateTable();
+      void FindMaxVariant();
+      void FindMinVariant();
 
     private:
       Variants variants;
+
       QTableWidget* tableWidget;
       QLabel* dir_name;
       QComboBox* var_box;
       QComboBox* way_box;
 
+      GroupBox* groupbox;
+      QLabel *max_var, *min_var;
+
+
     private:
       Button* CreateButton(const QString& text, const char* member);
 
-      // std::vector<QTableWidgetItem*> molecular_iod_items;
       void FillTableWithOneForm(size_t it, Release::Way way_idx, int var_idx, int& line_idx);
       void FillTimeLine(int& line_idx);
 

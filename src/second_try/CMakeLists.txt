@@ -25,6 +25,7 @@ qt_add_executable(leak
   view/DataViewWindow.h view/DataViewWindow.cc
   # view/DataTable.h view/DataTable.cc
   view/button.h view/button.cc
+  view/GroupBox.h
 
   model/variants.h
   model/release.h model/release.cc

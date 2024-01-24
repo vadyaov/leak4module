@@ -1,4 +1,5 @@
 #include "DataViewWindow.h"
+#include "GroupBox.h"
 
 #include <QFileDialog>
 #include <QGridLayout>
@@ -11,9 +12,10 @@
 
 DataViewWindow::DataViewWindow() {
   Button *dir_button = CreateButton(tr("Directory"), SLOT(DirectoryClicked()));
-  /* Button *show_button = CreateButton(tr("show"), SLOT(ShowClicked())); */
 
   dir_name = new QLabel;
+
+  groupbox = new GroupBox(tr("MaxMin"));
 
   way_box = new QComboBox;
   connect(way_box, SIGNAL(currentIndexChanged(int)), this, SLOT(UpdateTable()));
@@ -30,6 +32,12 @@ DataViewWindow::DataViewWindow() {
   var_box = new QComboBox;
   connect(var_box, SIGNAL(currentIndexChanged(int)), this, SLOT(UpdateTable()));
 
+  Button* find_max = CreateButton(tr("Max"), SLOT(FindMaxVariant()));
+  Button* find_min = CreateButton(tr("Min"), SLOT(FindMinVariant()));
+
+  max_var = new QLabel;
+  min_var = new QLabel;
+
   tableWidget = new QTableWidget(this);
 
   QGridLayout *main_layout = new QGridLayout;
@@ -39,8 +47,13 @@ DataViewWindow::DataViewWindow() {
   stuff_layout->addWidget(dir_name, 0, 1, 1, 1);
   stuff_layout->addWidget(way_box, 1, 0, 1, 1);
   stuff_layout->addWidget(var_box, 1, 1, 1, 1);
+  stuff_layout->addWidget(groupbox, 2, 0, 1, 2);
+  stuff_layout->addWidget(find_max, 3, 0, 1, 1);
+  stuff_layout->addWidget(find_min, 3, 1, 1, 1);
+  stuff_layout->addWidget(max_var, 4, 0, 1, 1);
+  stuff_layout->addWidget(min_var, 4, 1, 1, 1);
 
-  main_layout->addWidget(tableWidget, 0, 1, 10, 10);
+  main_layout->addWidget(tableWidget, 0, 1, 3, 1);
 
   main_layout->addLayout(stuff_layout, 0, 0, 1, 1);
 
@@ -129,4 +142,15 @@ Button *DataViewWindow::CreateButton(const QString &text, const char *member) {
   Button *button = new Button(text);
   connect(button, SIGNAL(clicked()), this, member);
   return button;
+}
+
+void DataViewWindow::FindMaxVariant() {
+  /* std::vector<int> selected_forms = groupbox->SelectedForms(); */
+  /* Release::Way current_way = Release::Way(1 << way_box->currentIndex()); */
+
+  // continue here
+
+}
+
+void DataViewWindow::FindMinVariant() {
 }

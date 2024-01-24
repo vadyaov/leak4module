@@ -59,14 +59,7 @@ class Release {
       throw std::runtime_error("Runtime error. No nuclide found");
     }
 
-
   private:
-     // плохо сделано. логика в том чтобы один раз инициализировать nuclides для всех путей
-     // но наверняка можно сделать как то по другому, может, на более высоком уровне (variants)
-     // хотя можно оставить и так, не сильно критично. Я не могу быть точно уверен что во всех вариантах
-     // будут одни и те же изотопы (хотя скорее всего это так)
-    // Nuclides nuc;
-
     std::vector<std::pair<Nuclides, Way>> release_;
     std::vector<double> time_;     // output time points
 
