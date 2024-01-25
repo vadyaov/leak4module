@@ -1,5 +1,6 @@
 #include "DataViewWindow.h"
 #include "GroupBox.h"
+#include "button.h"
 
 #include <QFileDialog>
 #include <QGridLayout>
@@ -7,15 +8,16 @@
 #include <QComboBox>
 #include <QTableWidget>
 #include <QTableWidgetItem>
+#include <QLineEdit>
 
 #include <iostream>
 
 DataViewWindow::DataViewWindow() {
-  Button *dir_button = CreateButton(tr("Directory"), SLOT(DirectoryClicked()));
+  Button *dir_button = CreateButton(tr("Open"), SLOT(DirectoryClicked()));
 
   dir_name = new QLabel;
 
-  groupbox = new GroupBox(tr("MaxMin"));
+  groupbox = new GroupBox(tr("Choose nuclides to sum"));
 
   way_box = new QComboBox;
   connect(way_box, SIGNAL(currentIndexChanged(int)), this, SLOT(UpdateTable()));
@@ -32,11 +34,13 @@ DataViewWindow::DataViewWindow() {
   var_box = new QComboBox;
   connect(var_box, SIGNAL(currentIndexChanged(int)), this, SLOT(UpdateTable()));
 
-  Button* find_max = CreateButton(tr("Max"), SLOT(FindMaxVariant()));
-  Button* find_min = CreateButton(tr("Min"), SLOT(FindMinVariant()));
+  Button* update_minmax = CreateButton(tr("update"), SLOT(FindMaxMinVariant()));
 
   max_var = new QLabel;
   min_var = new QLabel;
+
+  errors = new QLineEdit;
+  errors->setReadOnly(true);
 
   tableWidget = new QTableWidget(this);
 
@@ -47,11 +51,11 @@ DataViewWindow::DataViewWindow() {
   stuff_layout->addWidget(dir_name, 0, 1, 1, 1);
   stuff_layout->addWidget(way_box, 1, 0, 1, 1);
   stuff_layout->addWidget(var_box, 1, 1, 1, 1);
-  stuff_layout->addWidget(groupbox, 2, 0, 1, 2);
-  stuff_layout->addWidget(find_max, 3, 0, 1, 1);
-  stuff_layout->addWidget(find_min, 3, 1, 1, 1);
-  stuff_layout->addWidget(max_var, 4, 0, 1, 1);
+  stuff_layout->addWidget(groupbox, 2, 0, 3, 1);
+  stuff_layout->addWidget(update_minmax, 2, 1, 1, 1);
+  stuff_layout->addWidget(max_var, 3, 1, 1, 1);
   stuff_layout->addWidget(min_var, 4, 1, 1, 1);
+  stuff_layout->addWidget(errors, 10, 0, 2, 2);
 
   main_layout->addWidget(tableWidget, 0, 1, 3, 1);
 
@@ -144,13 +148,25 @@ Button *DataViewWindow::CreateButton(const QString &text, const char *member) {
   return button;
 }
 
-void DataViewWindow::FindMaxVariant() {
-  /* std::vector<int> selected_forms = groupbox->SelectedForms(); */
-  /* Release::Way current_way = Release::Way(1 << way_box->currentIndex()); */
+void DataViewWindow::FindMaxMinVariant() {
+  if (!variants.Empty()) {
+    std::vector<int> selected_forms = groupbox->SelectedForms();
+    if (selected_forms.empty()) {
+      errors->setText(tr("NO FORMS SELECTED"));
+      return;
+    }
+    errors->clear();
 
-  // continue here
+    Release::Way current_way = Release::Way(1 << way_box->currentIndex());
 
-}
+    std::string min_variant_dir_name = variants.FindVariant<double>(current_way, selected_forms, std::less<double>{});
+    QString min{"Minimum: "};
+    QString max{"Maximum: "};
 
-void DataViewWindow::FindMinVariant() {
+    min.append(variants.FindVariant<double>(current_way, selected_forms, std::less<double>{}));
+    max.append(variants.FindVariant<double>(current_way, selected_forms, {}));
+
+    min_var->setText(min);
+    max_var->setText(max);
+  }
 }

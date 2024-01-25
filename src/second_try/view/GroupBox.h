@@ -10,7 +10,7 @@ class GroupBox : public QGroupBox {
   Q_OBJECT
   public:
     GroupBox(const QString& title, QWidget* parent = nullptr) : QGroupBox(title, parent) {
-      QRadioButton* select_all = new QRadioButton(tr("All"));
+      QRadioButton* select_all = new QRadioButton(tr("Select all"));
       /* select_all->setChecked(true); */
       const std::vector<std::string> forms {"Molecular Iodine", "Organic Iodine", "Aerosol Iodine", "IRG", "Aerorsols"};
 

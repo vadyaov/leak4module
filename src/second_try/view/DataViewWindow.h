@@ -3,14 +3,14 @@
 
 #include <QWidget>
 
-#include "button.h"
-
 #include "../model/variants.h"
 
 QT_BEGIN_NAMESPACE
 class QLabel;
 class QComboBox;
 class QTableWidget;
+class QLineEdit;
+class Button;
 QT_END_NAMESPACE
 
 class GroupBox;
@@ -28,8 +28,7 @@ class DataViewWindow : public QWidget {
     private slots:
       void DirectoryClicked();
       void UpdateTable();
-      void FindMaxVariant();
-      void FindMinVariant();
+      void FindMaxMinVariant();
 
     private:
       Variants variants;
@@ -41,6 +40,8 @@ class DataViewWindow : public QWidget {
 
       GroupBox* groupbox;
       QLabel *max_var, *min_var;
+
+      QLineEdit *errors;
 
 
     private:

@@ -27,11 +27,17 @@ class Nuclides {
 
     void Print() const noexcept;
 
-    // суммарный выброс по всем р/н в последнюю временную точку
-    double TotalRelease() const noexcept;
-
-    // суммарный выброс по одной группе р/н в последней точке
-    double TotalOneFormRelease(Nuclide::Tp form) const noexcept;
+    double SumOf(const std::vector<int>& forms) {
+      double sum {0};
+      for (const auto& nucl : coolant_data_) {
+        for (int f : forms) {
+          if (nucl.first.Type() == Nuclide::Tp(f)) {
+            sum += nucl.second.back();
+          }
+        }
+      }
+      return sum;
+    }
 
     dvector& GetNuclideActivity(const std::string& name, Nuclide::Tp type);
 

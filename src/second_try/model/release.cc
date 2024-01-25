@@ -89,23 +89,3 @@ void Release::Print(int w) const noexcept {
     }
   }
 }
-
-double Release::TotalOneFormRelease(Way w, Nuclide::Tp form) const noexcept {
-  double total_rel_for_one_form {0};
-  for (const auto& rel : release_) {
-    if (rel.second == w) {
-      total_rel_for_one_form += rel.first.TotalOneFormRelease(form);
-    }
-  }
-  return total_rel_for_one_form;
-}
-
-double Release::TotalRelease(Way w) const noexcept {
-  double total_rel_for_all_nuc {0};
-  for (const auto& rel : release_) {
-    if (rel.second == w) {
-      total_rel_for_all_nuc += rel.first.TotalRelease();
-    }
-  }
-  return total_rel_for_all_nuc;
-}

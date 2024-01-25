@@ -36,18 +36,22 @@ class Release {
 
     void Print(int w) const noexcept;
 
-    // суммарный выброс по всем нуклидам для пути Way
-    double TotalRelease(Way w) const noexcept;
-
-    // суммарный выброс по нуклидов в форме form для пути Way
-    double TotalOneFormRelease(Way w, Nuclide::Tp form) const noexcept;
-
     int TotalNuclidesNumber() const noexcept { return release_.back().first.Size(); }
     const std::vector<double>& GetTimeVector() const noexcept { return time_; }
 
     int IodineNumber() const noexcept { return release_.back().first.IodineNumber(); }
     int IrgNumber() const noexcept { return release_.back().first.IrgNumber(); }
     int AerNumber() const noexcept { return release_.back().first.AerNumber(); }
+
+    double SumOfNuclidesActivity(Way w, const std::vector<int>& forms) {
+      double res_sum {0};
+      for (size_t i = 0; i != release_.size(); ++i) {
+        if (release_[i].second == w) {
+          res_sum += release_[i].first.SumOf(forms);
+        }
+      }
+      return res_sum;
+    }
 
     std::vector<std::pair<std::string, Nuclides::dvector>> GetNucData(Way way, Nuclide::Tp type) {
       std::vector<std::pair<std::string, Nuclides::dvector>> res;

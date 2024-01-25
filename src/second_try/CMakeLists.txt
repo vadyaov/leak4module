@@ -27,7 +27,7 @@ qt_add_executable(leak
   view/button.h view/button.cc
   view/GroupBox.h
 
-  model/variants.h
+  model/variants.h model/variants.cc
   model/release.h model/release.cc
   model/nuclides.h model/nuclides.cc
   model/nuclide.h model/nuclide.cc

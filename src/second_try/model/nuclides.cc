@@ -48,24 +48,6 @@ Nuclides::Nuclides(const std::string& source_file, int time_points_num) : iodine
   }
 }
 
-double Nuclides::TotalRelease() const noexcept {
-  double sum {0};
-  for (const auto&  [key, value] : coolant_data_) {
-    sum += value.back();
-  }
-  return sum;
-}
-
-double Nuclides::TotalOneFormRelease(Nuclide::Tp form) const noexcept {
-  double sum {0};
-  for (const auto& [key, value] : coolant_data_) {
-    if (key.Type() == form) {
-      sum += value.back();
-    }
-  }
-  return sum;
-}
-
 Nuclides::dvector& Nuclides::GetNuclideActivity(const std::string& name, Nuclide::Tp type) {
   for (auto& it : coolant_data_) {
     if (it.first.Name() == name && it.first.Type() == type)
