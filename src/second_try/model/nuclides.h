@@ -10,14 +10,15 @@
 #include <iostream>
 /*
   Класс Nuclides.
-  После работы конструктора по path = "variants/var_num/" класс содержит
-  мапу из всех нуклидов всех нужных форм (включая три формы йода) как ключи,
+  Kласс содержит мапу из всех нуклидов всех нужных форм (включая три формы йода) как ключи,
   значениями являются вектора активности(пока что пустые).
 
   Класс ничего не знает о пути выброса. Все, за что он отвечает - набор нуклидов
   и их активности. dvector в на более высоком уровне будет нужного размера - размера
   временного вектора (количество точек вывода)
 */
+
+// может лучше сделать std::vector<Nuclide> nuclides и std::vector<std::vector>> activity ? вместо multimap...
 
 class Nuclides {
   public:
@@ -27,29 +28,10 @@ class Nuclides {
 
     void Print() const noexcept;
 
-    double SumOf(const std::vector<int>& forms) {
-      double sum {0};
-      for (const auto& nucl : coolant_data_) {
-        for (int f : forms) {
-          if (nucl.first.Type() == Nuclide::Tp(f)) {
-            sum += nucl.second.back();
-          }
-        }
-      }
-      return sum;
-    }
+    double SumOf(const std::vector<int>& forms);
 
     dvector& GetNuclideActivity(const std::string& name, Nuclide::Tp type);
-
-    std::vector<std::pair<std::string, dvector>> GetNuclideArray(Nuclide::Tp tp) const {
-      std::vector<std::pair<std::string, dvector>> result;
-      for (const auto& nucl : coolant_data_) {
-        if (nucl.first.Type() == tp) {
-          result.push_back(std::make_pair(nucl.first.Name(), nucl.second));
-        }
-      }
-      return result;
-    }
+    std::vector<std::pair<std::string, dvector>> GetNuclideArray(Nuclide::Tp tp) const;
 
     int Size() const noexcept { return coolant_data_.size(); }
 

@@ -56,6 +56,16 @@ Nuclides::dvector& Nuclides::GetNuclideActivity(const std::string& name, Nuclide
   throw std::runtime_error("No NUCLIDE" + name + " found");
 }
 
+std::vector<std::pair<std::string, Nuclides::dvector>> Nuclides::GetNuclideArray(Nuclide::Tp tp) const {
+  std::vector<std::pair<std::string, dvector>> result;
+  for (const auto& nucl : coolant_data_) {
+    if (nucl.first.Type() == tp) {
+      result.push_back(std::make_pair(nucl.first.Name(), nucl.second));
+    }
+  }
+  return result;
+}
+
 void Nuclides::Print() const noexcept {
   for (const auto& [key, value] : coolant_data_) {
     std::cout << key.Type() << " [" << key.Name() << "] = "; 
@@ -64,4 +74,16 @@ void Nuclides::Print() const noexcept {
     std::cout << std::endl;
   }
   std::cout << std::endl;
+}
+
+double Nuclides::SumOf(const std::vector<int>& forms) {
+  double sum {0};
+  for (const auto& nucl : coolant_data_) {
+    for (int f : forms) {
+      if (nucl.first.Type() == Nuclide::Tp(f)) {
+        sum += nucl.second.back();
+      }
+    }
+  }
+  return sum;
 }

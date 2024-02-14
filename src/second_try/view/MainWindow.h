@@ -1,23 +1,74 @@
 #ifndef MAINWINDOW_H_
 #define MAINWINDOW_H_
 
-#include <QTabWidget>
+#include <QWidget>
 
-#include "DataViewWindow.h"
+#include "../model/variants.h"
 
-class MainWindow : public QTabWidget {
+QT_BEGIN_NAMESPACE
+class QLabel;
+class QComboBox;
+class QTableWidget;
+class QLineEdit;
+class Button;
+class QLineSeries;
+class QChart;
+class QChartView;
+class QGroupBox;
+class QRadioButton;
+QT_END_NAMESPACE
+
+class GroupBox;
+
+class MainWindow : public QWidget {
   Q_OBJECT
 
   public:
-    MainWindow(QWidget* parent = nullptr) : QTabWidget(parent) {
-      DataViewWindow *data_window = new DataViewWindow;
+    MainWindow(QWidget* parent = nullptr);
 
-      addTab(data_window, QString("Data"));
+    private slots:
+      void DirectoryClicked();
+      void UpdateTable();
+      void FindMaxMinVariant();
 
-      setWindowTitle(tr("MODULE"));
-    }
+      void FillIodine();
+      void FillIrg();
+      void FillAero();
 
-    QSize sizeHint() const override { return QSize(1000, 1000); }
+      // void PrintChart();
+
+    private:
+      Variants variants;
+
+      QTableWidget* tableWidget;
+      QLabel* dir_name;
+      QComboBox* var_box;
+      QComboBox* way_box;
+
+      GroupBox* groupbox;
+      QLabel *max_var, *min_var;
+
+      QLineEdit *errors;
+
+      QChart* chart;
+      QChartView* chart_view;
+      QLineSeries* series;
+
+      QComboBox* nucl_box;
+
+      QRadioButton* mol_iod_radio;
+      QRadioButton* org_iod_radio;
+      QRadioButton* aer_iod_radio;
+      QRadioButton* irg_radio;
+      QRadioButton* aer_radio;
+
+    private:
+      Button* CreateButton(const QString& text, const char* member);
+
+      void FillTableWithOneForm(size_t it, Release::Way way_idx, int var_idx, int& line_idx);
+      void FillTimeLine(int& line_idx);
+
+      QGroupBox *createGroupBoxForChart();
 };
 
 #endif  // MAINWINDOW_H_
