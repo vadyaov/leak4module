@@ -222,21 +222,43 @@ QGroupBox* MainWindow::createGroupBoxForChart() {
 }
 
 void MainWindow::FillIodine() {
-  int iod_num = variants.IodNum();
-  QStandardItemModel model(iod_num, 1);
-  for (int i = 0; i < iod_num; ++i) {
-    QStandardItem* item = new QStandardItem(QString("Item %0").arg(i));
+  auto names = variants.GetNuclideNames(Nuclide::IOD_MOL);
+  QStandardItemModel* model = new QStandardItemModel(names.size(), 1);
+  for (std::size_t i = 0; i < names.size(); ++i) {
+    QStandardItem* item = new QStandardItem(QString(names[i].data()));
 
     item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
     item->setData(Qt::Unchecked, Qt::CheckStateRole);
 
-    model.setItem(i, 0, item);
+    model->setItem(i, 0, item);
   }
-  nucl_box->setModel(&model);
+  nucl_box->setModel(model);
 }
 
 void MainWindow::FillIrg() {
+  auto names = variants.GetNuclideNames(Nuclide::IRG);
+  QStandardItemModel* model = new QStandardItemModel(names.size(), 1);
+  for (std::size_t i = 0; i < names.size(); ++i) {
+    QStandardItem* item = new QStandardItem(QString(names[i].data()));
+
+    item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+    item->setData(Qt::Unchecked, Qt::CheckStateRole);
+
+    model->setItem(i, 0, item);
+  }
+  nucl_box->setModel(model);
 }
 
 void MainWindow::FillAero() {
+  auto names = variants.GetNuclideNames(Nuclide::AER);
+  QStandardItemModel* model = new QStandardItemModel(names.size(), 1);
+  for (std::size_t i = 0; i < names.size(); ++i) {
+    QStandardItem* item = new QStandardItem(QString(names[i].data()));
+
+    item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+    item->setData(Qt::Unchecked, Qt::CheckStateRole);
+
+    model->setItem(i, 0, item);
+  }
+  nucl_box->setModel(model);
 }

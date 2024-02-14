@@ -42,8 +42,12 @@ class Variants {
       return var_name;
     }
 
+    std::vector<std::string> GetNuclideNames(Nuclide::Tp form) const {
+      return releases_.front().GetNuclideNames(form);
+    }
+
   private:
-    std::vector<Release> releases_; // releases[i] - release throw needed way for variant No. i + 1
+    std::vector<Release> releases_;
     std::vector<std::string> dir_names_;
 
 };

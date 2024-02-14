@@ -39,6 +39,15 @@ class Nuclides {
     int IrgNumber() const noexcept { return irg_count; }
     int AerNumber() const noexcept { return aer_count; }
 
+    std::vector<std::string> GetNuclidesNames(Nuclide::Tp form) const {
+      std::vector<std::string> result;
+      for (const auto& p : coolant_data_) {
+        if (p.first.Type() == form)
+          result.push_back(p.first.Name());
+      }
+      return result;
+    }
+
   private:
     std::multimap<Nuclide, dvector> coolant_data_;
     int iodine_count, irg_count, aer_count;

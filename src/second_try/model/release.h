@@ -63,6 +63,10 @@ class Release {
       throw std::runtime_error("Runtime error. No nuclide found");
     }
 
+    std::vector<std::string> GetNuclideNames(Nuclide::Tp form) const {
+      return release_.front().first.GetNuclidesNames(form);
+    }
+
   private:
     std::vector<std::pair<Nuclides, Way>> release_;
     std::vector<double> time_;     // output time points

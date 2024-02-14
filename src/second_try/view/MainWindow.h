@@ -16,6 +16,8 @@ class QChart;
 class QChartView;
 class QGroupBox;
 class QRadioButton;
+
+class QStandardItemModel;
 QT_END_NAMESPACE
 
 class GroupBox;
@@ -61,6 +63,8 @@ class MainWindow : public QWidget {
       QRadioButton* aer_iod_radio;
       QRadioButton* irg_radio;
       QRadioButton* aer_radio;
+
+      QStandardItemModel* model;
 
     private:
       Button* CreateButton(const QString& text, const char* member);
