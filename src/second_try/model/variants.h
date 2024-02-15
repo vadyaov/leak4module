@@ -43,7 +43,19 @@ class Variants {
     }
 
     std::vector<std::string> GetNuclideNames(Nuclide::Tp form) const {
+      if (releases_.empty()) throw std::runtime_error("Empty release");
+
       return releases_.front().GetNuclideNames(form);
+    }
+
+    std::vector<std::pair<std::string, Nuclides::dvector>> NuclideActivityFor(const std::string& name, Release::Way w, Nuclide::Tp tp) {
+      std::vector<std::pair<std::string, Nuclides::dvector>> data;
+      data.reserve(releases_.size());
+      for (std::size_t i = 0; i != releases_.size(); ++i) {
+        data.push_back(std::make_pair(dir_names_[i], releases_[i].NuclideActivityFor(name, w, tp)));
+      }
+
+      return data;
     }
 
   private:

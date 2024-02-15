@@ -63,6 +63,15 @@ class Release {
       throw std::runtime_error("Runtime error. No nuclide found");
     }
 
+    Nuclides::dvector NuclideActivityFor(const std::string& name, Way w, Nuclide::Tp t) {
+      for (auto& p : release_) {
+        if (p.second == w)
+          return p.first.GetNuclideActivity(name, t);
+      }
+
+      throw std::runtime_error("Incorrect Release Way");
+    }
+
     std::vector<std::string> GetNuclideNames(Nuclide::Tp form) const {
       return release_.front().first.GetNuclidesNames(form);
     }

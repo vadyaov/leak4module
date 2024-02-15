@@ -50,12 +50,14 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
   errors->setReadOnly(true);
 
   tableWidget = new QTableWidget;
+  tableWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
   chart = new QChart;
   chart_view = new QChartView(chart);
+  chart_view->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
   nucl_box = new QComboBox;
-  nucl_box->setPlaceholderText(QString("Select nuclides to draw"));
+  connect(nucl_box, SIGNAL(currentIndexChanged(int)), this, SLOT(PrintChart()));
 
   QGridLayout *main_layout = new QGridLayout;
   QGridLayout *stuff_layout = new QGridLayout;
@@ -207,7 +209,7 @@ QGroupBox* MainWindow::createGroupBoxForChart() {
   aer_radio = new QRadioButton(tr("Aerosols"));
   connect(aer_radio, SIGNAL(clicked()), this, SLOT(FillAero()));
 
-  mol_iod_radio->setChecked(true);
+  // mol_iod_radio->setChecked(true);
 
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->addWidget(mol_iod_radio);
@@ -223,34 +225,20 @@ QGroupBox* MainWindow::createGroupBoxForChart() {
 
 void MainWindow::FillIodine() {
   auto names = variants.GetNuclideNames(Nuclide::IOD_MOL);
-  QStandardItemModel* model = new QStandardItemModel(names.size(), 1);
-  for (std::size_t i = 0; i < names.size(); ++i) {
-    QStandardItem* item = new QStandardItem(QString(names[i].data()));
-
-    item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
-    item->setData(Qt::Unchecked, Qt::CheckStateRole);
-
-    model->setItem(i, 0, item);
-  }
-  nucl_box->setModel(model);
+  nucl_box->setModel(CreateModel(names));
 }
 
 void MainWindow::FillIrg() {
   auto names = variants.GetNuclideNames(Nuclide::IRG);
-  QStandardItemModel* model = new QStandardItemModel(names.size(), 1);
-  for (std::size_t i = 0; i < names.size(); ++i) {
-    QStandardItem* item = new QStandardItem(QString(names[i].data()));
-
-    item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
-    item->setData(Qt::Unchecked, Qt::CheckStateRole);
-
-    model->setItem(i, 0, item);
-  }
-  nucl_box->setModel(model);
+  nucl_box->setModel(CreateModel(names));
 }
 
 void MainWindow::FillAero() {
   auto names = variants.GetNuclideNames(Nuclide::AER);
+  nucl_box->setModel(CreateModel(names));
+}
+
+QStandardItemModel* MainWindow::CreateModel(const std::vector<std::string>& names) {
   QStandardItemModel* model = new QStandardItemModel(names.size(), 1);
   for (std::size_t i = 0; i < names.size(); ++i) {
     QStandardItem* item = new QStandardItem(QString(names[i].data()));
@@ -260,5 +248,72 @@ void MainWindow::FillAero() {
 
     model->setItem(i, 0, item);
   }
-  nucl_box->setModel(model);
+
+  connect(model, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(PrintChart()));
+
+  return model;
+}
+
+void MainWindow::PrintChart() {
+  int way_idx = way_box->currentIndex();
+  int type_idx = GetTypeIndex();
+  std::vector<std::string> checked_names_from_box = GetNamesFromBox();
+  std::cout << "Way: " << way_idx << "\ntype: " << type_idx << "\nnames: ";
+  for (const auto& s : checked_names_from_box)
+    std::cout << s << " ";
+  std::cout << std::endl;
+  // 4. Print
+  const std::vector<double>& time_arr = variants.GetTimeArray();
+  for (const std::string& nuc_name : checked_names_from_box) {
+    // vector<pair> --> var_name, dvector
+    auto activity_data = variants.NuclideActivityFor(nuc_name, Release::Way(1 << way_idx), Nuclide::Tp(type_idx));
+    std::cout << "Activity for " << nuc_name << ":\n";
+    for (const auto& pair : activity_data) {
+      std::cout << "Variant " << pair.first << ": ";
+      for (double a : pair.second)
+        std::cout << a << " ";
+      std::cout << "\n";
+    }
+
+    for (const auto& pair : activity_data) {
+      auto series = new QLineSeries;
+      for (std::size_t i = 0; i != pair.second.size(); ++i)
+        series->append(time_arr[i], pair.second[i]);
+
+      chart->addSeries(series);
+      chart->createDefaultAxes();
+    }
+  }
+}
+
+int MainWindow::GetTypeIndex() {
+  int idx;
+  if (mol_iod_radio->isChecked())
+    idx = 0;
+  else if (org_iod_radio->isChecked())
+    idx = 1;
+  else if (aer_iod_radio->isChecked())
+    idx = 2;
+  else if (irg_radio->isChecked())
+    idx = 3;
+  else if (aer_radio->isChecked())
+    idx = 4;
+  else {
+    // noone is checked
+  }
+  return idx;
+}
+
+std::vector<std::string> MainWindow::GetNamesFromBox() {
+  const int n = nucl_box->count();
+  std::vector<std::string> names;
+
+  names.reserve(n);
+  QAbstractItemModel* model_ptr = nucl_box->model();
+  for (int i = 0; i != n; ++i) {
+    if (qobject_cast<QStandardItemModel*>(model_ptr)->item(i)->checkState() == Qt::Checked)
+      names.push_back(nucl_box->itemText(i).toStdString());
+  }
+
+  return names;
 }

@@ -37,7 +37,7 @@ class MainWindow : public QWidget {
       void FillIrg();
       void FillAero();
 
-      // void PrintChart();
+      void PrintChart();
 
     private:
       Variants variants;
@@ -64,8 +64,6 @@ class MainWindow : public QWidget {
       QRadioButton* irg_radio;
       QRadioButton* aer_radio;
 
-      QStandardItemModel* model;
-
     private:
       Button* CreateButton(const QString& text, const char* member);
 
@@ -73,6 +71,11 @@ class MainWindow : public QWidget {
       void FillTimeLine(int& line_idx);
 
       QGroupBox *createGroupBoxForChart();
+
+      QStandardItemModel* CreateModel(const std::vector<std::string>&);
+
+      int GetTypeIndex();
+      std::vector<std::string> GetNamesFromBox();
 };
 
 #endif  // MAINWINDOW_H_
