@@ -12,6 +12,7 @@
 #include <QLineEdit>
 #include <QLineSeries>
 #include <QChartView>
+#include <QValueAxis>
 
 #include <QStandardItemModel>
 #include <QStandardItem>
@@ -50,11 +51,11 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
   errors->setReadOnly(true);
 
   tableWidget = new QTableWidget;
-  tableWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+  tableWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
   chart = new QChart;
   chart_view = new QChartView(chart);
-  chart_view->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+  chart_view->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
   nucl_box = new QComboBox;
   connect(nucl_box, SIGNAL(currentIndexChanged(int)), this, SLOT(PrintChart()));
@@ -76,7 +77,10 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
   stuff_layout->addWidget(nucl_box, 11, 1, 1, 1, Qt::AlignTop);
 
   main_layout->addWidget(tableWidget, 0, 1, 3, 1);
-  main_layout->addWidget(chart_view, 0, 2, 3, 2);
+  main_layout->addWidget(chart_view, 0, 2, 3, 1);
+
+  main_layout->setColumnStretch(1, 2);
+  main_layout->setColumnStretch(2, 3);
 
   main_layout->addLayout(stuff_layout, 0, 0, 1, 1);
 
@@ -264,26 +268,23 @@ void MainWindow::PrintChart() {
   std::cout << std::endl;
   // 4. Print
   const std::vector<double>& time_arr = variants.GetTimeArray();
+  chart->removeAllSeries();
   for (const std::string& nuc_name : checked_names_from_box) {
-    // vector<pair> --> var_name, dvector
     auto activity_data = variants.NuclideActivityFor(nuc_name, Release::Way(1 << way_idx), Nuclide::Tp(type_idx));
-    std::cout << "Activity for " << nuc_name << ":\n";
-    for (const auto& pair : activity_data) {
-      std::cout << "Variant " << pair.first << ": ";
-      for (double a : pair.second)
-        std::cout << a << " ";
-      std::cout << "\n";
-    }
 
     for (const auto& pair : activity_data) {
       auto series = new QLineSeries;
-      for (std::size_t i = 0; i != pair.second.size(); ++i)
+      for (std::size_t i = 0; i != pair.second.size(); ++i) {
         series->append(time_arr[i], pair.second[i]);
-
+      }
       chart->addSeries(series);
-      chart->createDefaultAxes();
     }
   }
+  QValueAxis *axisX = new QValueAxis;
+  axisX->setRange(0, time_arr.back());
+  axisX->setTickCount(10);
+  axisX->setLabelFormat("%.2f");
+  chart_view->chart()->addAxis(axisX, Qt::AlignBottom);
 }
 
 int MainWindow::GetTypeIndex() {
