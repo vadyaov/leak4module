@@ -17,8 +17,11 @@
 #include <QStandardItemModel>
 #include <QStandardItem>
 
+#include <QSplitter>
+
 
 #include <iostream>
+#include <limits>
 
 MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
   Button *dir_button = CreateButton(tr("Open"), SLOT(DirectoryClicked()));
@@ -63,6 +66,8 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
   QGridLayout *main_layout = new QGridLayout;
   QGridLayout *stuff_layout = new QGridLayout;
 
+  QSplitter* splitter = new QSplitter;
+
   stuff_layout->addWidget(dir_button, 0, 0, 1, 1);
   stuff_layout->addWidget(dir_name, 0, 1, 1, 1);
   stuff_layout->addWidget(way_box, 1, 0, 1, 1);
@@ -76,8 +81,11 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
   stuff_layout->addWidget(createGroupBoxForChart(), 11, 0, 1, 1);
   stuff_layout->addWidget(nucl_box, 11, 1, 1, 1, Qt::AlignTop);
 
-  main_layout->addWidget(tableWidget, 0, 1, 3, 1);
-  main_layout->addWidget(chart_view, 0, 2, 3, 1);
+  splitter->addWidget(tableWidget);
+  splitter->addWidget(chart_view);
+  // main_layout->addWidget(tableWidget, 0, 1, 3, 1);
+  // main_layout->addWidget(chart_view, 0, 2, 3, 1);
+  main_layout->addWidget(splitter, 0, 1, 3, 2);
 
   main_layout->setColumnStretch(1, 2);
   main_layout->setColumnStretch(2, 3);
@@ -259,6 +267,9 @@ QStandardItemModel* MainWindow::CreateModel(const std::vector<std::string>& name
 }
 
 void MainWindow::PrintChart() {
+  double ymax {std::numeric_limits<double>::min()};
+  double ymin {std::numeric_limits<double>::max()};
+
   int way_idx = way_box->currentIndex();
   int type_idx = GetTypeIndex();
   std::vector<std::string> checked_names_from_box = GetNamesFromBox();
@@ -266,25 +277,43 @@ void MainWindow::PrintChart() {
   for (const auto& s : checked_names_from_box)
     std::cout << s << " ";
   std::cout << std::endl;
-  // 4. Print
+
   const std::vector<double>& time_arr = variants.GetTimeArray();
   chart->removeAllSeries();
   for (const std::string& nuc_name : checked_names_from_box) {
     auto activity_data = variants.NuclideActivityFor(nuc_name, Release::Way(1 << way_idx), Nuclide::Tp(type_idx));
+    auto dir_names = variants.GetDirNames();
 
-    for (const auto& pair : activity_data) {
-      auto series = new QLineSeries;
-      for (std::size_t i = 0; i != pair.second.size(); ++i) {
-        series->append(time_arr[i], pair.second[i]);
+    for (std::size_t i = 0; i != activity_data.size(); ++i) {
+      std::cout << "Activity for " << nuc_name << ": ";
+      auto series = new QLineSeries();
+      series->setName(dir_names[i].data());
+      for (std::size_t j = 0; j != activity_data[i].second.size(); ++j) {
+        series->append(time_arr[j], activity_data[i].second[j]);
+        std::cout << activity_data[i].second[j] << " ";
+        if (activity_data[i].second[j] > ymax)
+          ymax = activity_data[i].second[j];
+        if (activity_data[i].second[j] < ymin)
+          ymin = activity_data[i].second[j];
       }
       chart->addSeries(series);
-    }
+      chart->createDefaultAxes();
+      std::cout << "\n";
+    } 
   }
-  QValueAxis *axisX = new QValueAxis;
-  axisX->setRange(0, time_arr.back());
-  axisX->setTickCount(10);
-  axisX->setLabelFormat("%.2f");
-  chart_view->chart()->addAxis(axisX, Qt::AlignBottom);
+  std::cout << "ymin = " << ymin << "\nymax = " << ymax << "\n";
+  QList<QAbstractAxis*> axisy = chart->axes(Qt::Vertical);
+  if (!axisy.empty()) {
+    axisy.back()->setRange(ymin + 100, ymax - 100);
+    static_cast<QValueAxis*>(axisy.back())->setLabelFormat("%.3e");
+  }
+
+  QList<QAbstractAxis*> axisx = chart->axes(Qt::Horizontal);
+  if (!axisy.empty())
+    axisx.back()->setRange(0, time_arr.back() + 1000);
+
+  chart->legend()->setVisible(true);
+  chart->legend()->setShowToolTips(true);
 }
 
 int MainWindow::GetTypeIndex() {

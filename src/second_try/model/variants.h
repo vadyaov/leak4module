@@ -58,6 +58,10 @@ class Variants {
       return data;
     }
 
+    std::vector<std::string> GetDirNames() const {
+      return dir_names_;
+    }
+
   private:
     std::vector<Release> releases_;
     std::vector<std::string> dir_names_;

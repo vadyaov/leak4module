@@ -16,6 +16,7 @@ class QChart;
 class QChartView;
 class QGroupBox;
 class QRadioButton;
+class QValueAxis;
 
 class QStandardItemModel;
 QT_END_NAMESPACE
@@ -54,7 +55,6 @@ class MainWindow : public QWidget {
 
       QChart* chart;
       QChartView* chart_view;
-      QLineSeries* series;
 
       QComboBox* nucl_box;
 
