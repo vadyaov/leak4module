@@ -61,7 +61,7 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
   chart_view->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
   nucl_box = new QComboBox;
-  connect(nucl_box, SIGNAL(currentIndexChanged(int)), this, SLOT(PrintChart()));
+  connect(nucl_box, &QComboBox::currentIndexChanged, [this]() { chart->removeAllSeries(); });
 
   QGridLayout *main_layout = new QGridLayout;
   QGridLayout *stuff_layout = new QGridLayout;
@@ -249,7 +249,9 @@ void MainWindow::FillAero() {
   auto names = variants.GetNuclideNames(Nuclide::AER);
   nucl_box->setModel(CreateModel(names));
 }
-
+// Я хочу не перерисовывать каждый раз график, когда нажимается что то внутри бокса, а проверять, добавлена серия или удалена. И если
+// добавлена, то добавить ее на график, если удалена - то удалить. Для этого я хочу чтобы метод print принимал указатель на итем, который
+// изменился, и уже в принте надо проверить, что с ним случилось (удалить его или добавить, то есть если он checked то добавить, и наоборот)
 QStandardItemModel* MainWindow::CreateModel(const std::vector<std::string>& names) {
   QStandardItemModel* model = new QStandardItemModel(names.size(), 1);
   for (std::size_t i = 0; i < names.size(); ++i) {
@@ -261,33 +263,32 @@ QStandardItemModel* MainWindow::CreateModel(const std::vector<std::string>& name
     model->setItem(i, 0, item);
   }
 
-  connect(model, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(PrintChart()));
+  connect(model, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(PrintChart(QStandardItem*)));
 
   return model;
 }
 
-void MainWindow::PrintChart() {
-  double ymax {std::numeric_limits<double>::min()};
-  double ymin {std::numeric_limits<double>::max()};
+void MainWindow::PrintChart(QStandardItem* item) {
+  QString item_name = item->text();
 
   int way_idx = way_box->currentIndex();
   int type_idx = GetTypeIndex();
-  std::vector<std::string> checked_names_from_box = GetNamesFromBox();
-  std::cout << "Way: " << way_idx << "\ntype: " << type_idx << "\nnames: ";
-  for (const auto& s : checked_names_from_box)
-    std::cout << s << " ";
-  std::cout << std::endl;
+
+  static double ymax {std::numeric_limits<double>::min()};
+  static double ymin {std::numeric_limits<double>::max()};
 
   const std::vector<double>& time_arr = variants.GetTimeArray();
-  chart->removeAllSeries();
-  for (const std::string& nuc_name : checked_names_from_box) {
-    auto activity_data = variants.NuclideActivityFor(nuc_name, Release::Way(1 << way_idx), Nuclide::Tp(type_idx));
+
+  if (item->checkState() == Qt::Checked) {
+    std::cout << "Add to chart\n";
+    auto activity_data = variants.NuclideActivityFor(item_name.toStdString(), Release::Way(1 << way_idx), Nuclide::Tp(type_idx));
     auto dir_names = variants.GetDirNames();
 
     for (std::size_t i = 0; i != activity_data.size(); ++i) {
-      std::cout << "Activity for " << nuc_name << ": ";
+      // std::cout << "Activity for " << item_name << ": ";
       auto series = new QLineSeries();
       series->setName(dir_names[i].data());
+      series->setObjectName(item_name);
       for (std::size_t j = 0; j != activity_data[i].second.size(); ++j) {
         series->append(time_arr[j], activity_data[i].second[j]);
         std::cout << activity_data[i].second[j] << " ";
@@ -300,20 +301,25 @@ void MainWindow::PrintChart() {
       chart->createDefaultAxes();
       std::cout << "\n";
     } 
-  }
-  std::cout << "ymin = " << ymin << "\nymax = " << ymax << "\n";
-  QList<QAbstractAxis*> axisy = chart->axes(Qt::Vertical);
-  if (!axisy.empty()) {
-    axisy.back()->setRange(ymin + 100, ymax - 100);
-    static_cast<QValueAxis*>(axisy.back())->setLabelFormat("%.3e");
+
+    QList<QAbstractAxis*> axisy = chart->axes(Qt::Vertical);
+    if (!axisy.empty()) {
+      axisy.back()->setRange(ymin + 100, ymax - 100);
+      static_cast<QValueAxis*>(axisy.back())->setLabelFormat("%.3e");
+    }
+
+    QList<QAbstractAxis*> axisx = chart->axes(Qt::Horizontal);
+    if (!axisy.empty())
+      axisx.back()->setRange(0, time_arr.back() + 1000);
+
+  } else {
+    auto sers = chart->series();
+    for (QAbstractSeries* s : sers) {
+      if (s->objectName() == item_name)
+        chart->removeSeries(s);
+    }
   }
 
-  QList<QAbstractAxis*> axisx = chart->axes(Qt::Horizontal);
-  if (!axisy.empty())
-    axisx.back()->setRange(0, time_arr.back() + 1000);
-
-  chart->legend()->setVisible(true);
-  chart->legend()->setShowToolTips(true);
 }
 
 int MainWindow::GetTypeIndex() {

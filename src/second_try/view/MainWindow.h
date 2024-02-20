@@ -18,6 +18,7 @@ class QGroupBox;
 class QRadioButton;
 class QValueAxis;
 
+class QStandardItem;
 class QStandardItemModel;
 QT_END_NAMESPACE
 
@@ -38,7 +39,7 @@ class MainWindow : public QWidget {
       void FillIrg();
       void FillAero();
 
-      void PrintChart();
+      void PrintChart(QStandardItem*);
 
     private:
       Variants variants;
@@ -55,7 +56,6 @@ class MainWindow : public QWidget {
 
       QChart* chart;
       QChartView* chart_view;
-
       QComboBox* nucl_box;
 
       QRadioButton* mol_iod_radio;
