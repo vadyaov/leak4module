@@ -2,6 +2,7 @@
 
 #include "GroupBox.h"
 #include "button.h"
+#include "chart.h"
 
 #include <QFileDialog>
 #include <QGridLayout>
@@ -10,9 +11,7 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QLineEdit>
-#include <QLineSeries>
-#include <QChartView>
-#include <QValueAxis>
+
 
 #include <QStandardItemModel>
 #include <QStandardItem>
@@ -56,12 +55,10 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
   tableWidget = new QTableWidget;
   tableWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-  chart = new QChart;
-  chart_view = new QChartView(chart);
-  chart_view->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+  chart_view = new ChartView;
 
   nucl_box = new QComboBox;
-  connect(nucl_box, &QComboBox::currentIndexChanged, [this]() { chart->removeAllSeries(); });
+  connect(nucl_box, &QComboBox::currentIndexChanged, [this]() { chart_view->deleteAllLines(); });
 
   QGridLayout *main_layout = new QGridLayout;
   QGridLayout *stuff_layout = new QGridLayout;
@@ -274,8 +271,8 @@ void MainWindow::PrintChart(QStandardItem* item) {
   int way_idx = way_box->currentIndex();
   int type_idx = GetTypeIndex();
 
-  static double ymax {std::numeric_limits<double>::min()};
-  static double ymin {std::numeric_limits<double>::max()};
+  // static double ymax {std::numeric_limits<double>::min()};
+  // static double ymin {std::numeric_limits<double>::max()};
 
   const std::vector<double>& time_arr = variants.GetTimeArray();
 
@@ -284,40 +281,11 @@ void MainWindow::PrintChart(QStandardItem* item) {
     auto activity_data = variants.NuclideActivityFor(item_name.toStdString(), Release::Way(1 << way_idx), Nuclide::Tp(type_idx));
     auto dir_names = variants.GetDirNames();
 
-    for (std::size_t i = 0; i != activity_data.size(); ++i) {
-      // std::cout << "Activity for " << item_name << ": ";
-      auto series = new QLineSeries();
-      series->setName(dir_names[i].data());
-      series->setObjectName(item_name);
-      for (std::size_t j = 0; j != activity_data[i].second.size(); ++j) {
-        series->append(time_arr[j], activity_data[i].second[j]);
-        std::cout << activity_data[i].second[j] << " ";
-        if (activity_data[i].second[j] > ymax)
-          ymax = activity_data[i].second[j];
-        if (activity_data[i].second[j] < ymin)
-          ymin = activity_data[i].second[j];
-      }
-      chart->addSeries(series);
-      chart->createDefaultAxes();
-      std::cout << "\n";
-    } 
-
-    QList<QAbstractAxis*> axisy = chart->axes(Qt::Vertical);
-    if (!axisy.empty()) {
-      axisy.back()->setRange(ymin + 100, ymax - 100);
-      static_cast<QValueAxis*>(axisy.back())->setLabelFormat("%.3e");
-    }
-
-    QList<QAbstractAxis*> axisx = chart->axes(Qt::Horizontal);
-    if (!axisy.empty())
-      axisx.back()->setRange(0, time_arr.back() + 1000);
+    for (std::size_t i = 0; i != activity_data.size(); ++i)
+      chart_view->addLine(QString(dir_names[i].data()), item_name, activity_data[i].second, time_arr);
 
   } else {
-    auto sers = chart->series();
-    for (QAbstractSeries* s : sers) {
-      if (s->objectName() == item_name)
-        chart->removeSeries(s);
-    }
+    chart_view->deleteLine(item_name);
   }
 
 }

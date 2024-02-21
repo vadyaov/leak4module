@@ -7,13 +7,14 @@
 
 QT_BEGIN_NAMESPACE
 class QGraphicsSceneMouseEvent;
+class QChart;
 QT_END_NAMESPACE
 
-QT_CHARTS_BEGIN_NAMESPACE
-class QChart;
-QT_CHARTS_END_NAMESPACE
+// QT_CHARTS_BEGIN_NAMESPACE
+// class QChart;
+// QT_CHARTS_END_NAMESPACE
 
-QT_CHARTS_USE_NAMESPACE
+// QT_CHARTS_USE_NAMESPACE
 
 class Callout : public QGraphicsItem
 {
@@ -25,7 +26,7 @@ public:
     void updateGeometry();
 
     QRectF boundingRect() const;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,QWidget *widget);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);

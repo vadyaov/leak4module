@@ -13,7 +13,6 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
-find_package(Qt6 REQUIRED COMPONENTS Sql)
 find_package(Qt6 REQUIRED COMPONENTS Charts)
 
 add_compile_options(-Wall -Werror -Wextra -Wpedantic)
@@ -22,6 +21,8 @@ qt_add_executable(leak
   view/app.cc
 
   view/MainWindow.h view/MainWindow.cc
+  view/chart.h view/chart.cc
+  view/callout.h view/callout.cc
 
   view/button.h view/button.cc
   view/GroupBox.h

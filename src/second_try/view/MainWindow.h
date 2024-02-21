@@ -11,17 +11,13 @@ class QComboBox;
 class QTableWidget;
 class QLineEdit;
 class Button;
-class QLineSeries;
-class QChart;
-class QChartView;
 class QGroupBox;
 class QRadioButton;
-class QValueAxis;
-
 class QStandardItem;
 class QStandardItemModel;
 QT_END_NAMESPACE
 
+class ChartView;
 class GroupBox;
 
 class MainWindow : public QWidget {
@@ -54,9 +50,8 @@ class MainWindow : public QWidget {
 
       QLineEdit *errors;
 
-      QChart* chart;
-      QChartView* chart_view;
       QComboBox* nucl_box;
+      ChartView* chart_view;
 
       QRadioButton* mol_iod_radio;
       QRadioButton* org_iod_radio;

@@ -8,15 +8,17 @@ QT_BEGIN_NAMESPACE
 class QGraphicsScene;
 class QMouseEvent;
 class QResizeEvent;
+
+class QChart;
 QT_END_NAMESPACE
 
-QT_CHARTS_BEGIN_NAMESPACE
-class QChart;
-QT_CHARTS_END_NAMESPACE
+// QT_CHARTS_BEGIN_NAMESPACE
+// class QChart;
+// QT_CHARTS_END_NAMESPACE
 
 class Callout;
 
-QT_CHARTS_USE_NAMESPACE
+// QT_CHARTS_USE_NAMESPACE
 
 class ChartView : public QGraphicsView {
   Q_OBJECT
@@ -25,6 +27,8 @@ class ChartView : public QGraphicsView {
     ChartView(QWidget* parent = 0);
 
     void addLine(const QString& line_name, const QString& obj_name, const std::vector<double>& activity, const std::vector<double>& time);
+    void deleteLine(const QString& obj_name);
+    void deleteAllLines();
 
   protected:
     void resizeEvent(QResizeEvent *event);
@@ -40,6 +44,6 @@ class ChartView : public QGraphicsView {
     QChart *m_chart;
     Callout *m_tooltip;
     QList<Callout*> m_callouts;
-}
+};
 
 #endif // CHART_H_

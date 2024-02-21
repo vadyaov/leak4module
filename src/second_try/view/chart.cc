@@ -6,12 +6,12 @@
 #include <QLineSeries>
 #include <QGraphicsTextItem>
 
-// #include "callout.h"
+#include "callout.h"
 
-#include <QMouseEvent"
+#include <QMouseEvent>
 
-ChartView::Chart(QWidget *parent)
-     : QGRaphicsView(new QGraphicsScene, parent),
+ChartView::ChartView(QWidget *parent)
+     : QGraphicsView(new QGraphicsScene, parent),
        m_coordX(0),
        m_coordY(0),
        m_chart(0),
@@ -22,9 +22,9 @@ ChartView::Chart(QWidget *parent)
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
   m_chart = new QChart;
-  m_chart->setMinimumSize(640, 480);
+  // m_chart->setMinimumSize(640, 480);
   m_chart->setTitle("Hover the line to show callout. Click the line to make it stay");
-  m_chart->legenda()->hide();
+  m_chart->legend()->hide();
   m_chart->setAcceptHoverEvents(true);
 
   setRenderHint(QPainter::Antialiasing);
@@ -49,7 +49,7 @@ void ChartView::addLine(const QString& line_name, const QString& obj_name, const
   series->setObjectName(obj_name);
 
   for (std::size_t i = 0; i != time.size(); ++i) {
-    series.append(time[i], activity[i]);
+    series->append(time[i], activity[i]);
   }
 
   connect(series, &QLineSeries::clicked, this, &ChartView::keepCallout);
@@ -57,6 +57,16 @@ void ChartView::addLine(const QString& line_name, const QString& obj_name, const
 
   m_chart->addSeries(series);
   m_chart->createDefaultAxes();
+}
+
+void ChartView::deleteLine(const QString& obj_name) {
+  for (const auto& s : m_chart->series())
+    if (s->objectName() == obj_name)
+      m_chart->removeSeries(s);
+}
+
+void ChartView::deleteAllLines() {
+  m_chart->removeAllSeries();
 }
 
 void ChartView::resizeEvent(QResizeEvent *event) {
@@ -70,7 +80,7 @@ void ChartView::resizeEvent(QResizeEvent *event) {
     for (Callout * callout : callouts)
       callout->updateGeometry();
   }
-  QGRaphicsView::resizeEvent(event);
+  QGraphicsView::resizeEvent(event);
 }
 
 void ChartView::mouseMoveEvent(QMouseEvent *event) {
